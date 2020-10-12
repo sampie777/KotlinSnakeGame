@@ -2,9 +2,13 @@ package nl.sajansen.kotlinsnakegame.objects.game
 
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
+import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.GameObject
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.player.Player
+import nl.sajansen.kotlinsnakegame.objects.visuals.GameOverlay
+import java.awt.Graphics2D
+import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
@@ -42,19 +46,17 @@ object Game : KeyEventListener, GameObject {
             return
         }
 
-        if (state.runningState == GameRunningState.STARTED || state.runningState == GameRunningState.PAUSED) {
-            if (e.keyCode == KeyEvent.VK_P || e.keyCode == KeyEvent.VK_PAUSE) {
-                pause()
-            }
+        if (e.keyCode == KeyEvent.VK_PAUSE) {
+            pause()
         }
     }
 
-    private fun pause() {
+    fun pause() {
         if (state.runningState == GameRunningState.PAUSED) {
             logger.info("Unpausing game")
             GameStepTimer.restart()
             state.runningState = GameRunningState.STARTED
-        } else {
+        } else if (state.runningState == GameRunningState.STARTED) {
             logger.info("Pausing game")
             GameStepTimer.stop()
             state.runningState = GameRunningState.PAUSED
@@ -70,6 +72,11 @@ object Game : KeyEventListener, GameObject {
         return player
     }
 
+    fun end(reason: String) {
+        logger.info("Game ended: $reason")
+        state.runningState = GameRunningState.ENDED
+    }
+
     override fun reset() {
         board.reset()
     }
@@ -79,6 +86,12 @@ object Game : KeyEventListener, GameObject {
     }
 
     override fun paint(): BufferedImage {
-        return board.paint()
+        val (bufferedImage, g: Graphics2D) = createGraphics(board.visibleSize.width, board.visibleSize.height)
+
+        g.drawImage(board.paint(), null, 0, 0)
+        g.drawImage(GameOverlay.paint(), null, 0, 0)
+
+        g.dispose()
+        return bufferedImage
     }
 }

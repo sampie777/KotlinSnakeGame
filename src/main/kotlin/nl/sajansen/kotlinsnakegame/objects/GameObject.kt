@@ -6,4 +6,5 @@ interface GameObject {
     fun reset()
     fun step()
     fun paint(): BufferedImage
+    fun destroy() {}
 }

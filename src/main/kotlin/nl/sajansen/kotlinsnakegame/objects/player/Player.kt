@@ -7,6 +7,7 @@ import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.Sprites
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.props.Food
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
@@ -17,8 +18,14 @@ class Player : Sprite(), KeyEventListener {
     var name: String = ""
     var direction: Direction = Direction.NONE
     var speed = 5
+    var score = 0
+        set(value) {
+            field = value
+            logger.info("Player scores increases to: $value")
+        }
 
     override var sprite = Sprites.PLAYER_FACE_1
+    override var solid = false
 
     init {
         EventHub.register(this)
@@ -47,6 +54,12 @@ class Player : Sprite(), KeyEventListener {
 
     override fun reset() {
         position = Point(0, 0)
+        score = 0
+    }
+
+    override fun destroy() {
+        logger.warning("Cannot destroy player object")
+        Game.end("Player is destroyed")
     }
 
     override fun step() {
@@ -60,9 +73,22 @@ class Player : Sprite(), KeyEventListener {
             }
         }
 
-        if (Game.board.isSolidObstacleAt(this)) {
+        val spritesAtPosition = Game.board.getSpritesAt(this)
+
+        if (spritesAtPosition.any { it.solid }) {
             position = oldPosition
             return
         }
+
+        spritesAtPosition.filterIsInstance<Food>()
+            .forEach {
+                consume(it)
+            }
+    }
+
+    private fun consume(food: Food) {
+        logger.info("Player eats food")
+        score += food.points
+        food.destroy()
     }
 }

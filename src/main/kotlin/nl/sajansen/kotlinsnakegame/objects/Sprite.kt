@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame.objects
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.scaleImage
+import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
 import java.awt.image.BufferedImage
@@ -24,5 +25,9 @@ abstract class Sprite : GameObject {
             spriteResource() ?: throw IllegalArgumentException("Sprite resource not found: ${sprite.path}")
         val image = ImageIO.read(spriteResource)
         return scaleImage(image, size.width, size.height)
+    }
+
+    override fun destroy() {
+        Game.board.props.remove(this)
     }
 }

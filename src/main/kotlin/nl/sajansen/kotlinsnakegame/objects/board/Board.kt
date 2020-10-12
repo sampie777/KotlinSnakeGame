@@ -8,6 +8,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
 import nl.sajansen.kotlinsnakegame.objects.props.Box
+import nl.sajansen.kotlinsnakegame.objects.props.Food
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Point
@@ -25,15 +26,21 @@ class Board : GameObject {
         loadBoard1()
     }
 
-    fun loadBoard1() {
+    private fun loadBoard1() {
         props.add(Box(Point(100, 60)))
         props.add(Box(Point(311, 98)))
+        props.add(Food(Point(50, 50)))
+        props.add(Food(Point(50, 100)))
+        props.add(Food(Point(130, 100)))
     }
 
     private fun allSprites() = Game.players + props
 
     override fun reset() {
-        allSprites().forEach {
+        props.clear()
+        loadBoard1()
+
+        Game.players.forEach {
             it.reset()
         }
     }
@@ -59,13 +66,12 @@ class Board : GameObject {
         }
     }
 
-    fun isSolidObstacleAt(sprite: Sprite): Boolean {
-        return allSprites().filter { it.solid && it != sprite}
-            .find { isSpriteInSprite(sprite, it) } != null
+    fun getSpritesAt(sprite: Sprite): List<Sprite> {
+        return allSprites().filter { it != sprite }
+            .filter { isSpriteInSprite(sprite, it) }
     }
 
-    fun isSolidObstacleAt(position: Point): Boolean {
-        return allSprites().filter { it.solid }
-            .find { isPointInSprite(position, it) } != null
+    fun getSpritesAt(position: Point): List<Sprite> {
+        return allSprites().filter { isPointInSprite(position, it) }
     }
 }

@@ -19,17 +19,23 @@ class ApplicationMenu : JMenu("Application") {
     private fun initGui() {
         mnemonic = KeyEvent.VK_A
 
+        val pauseItem = JMenuItem("Pause")
         val restartItem = JMenuItem("Restart")
         val quitItem = JMenuItem("Quit")
 
         // Set alt keys
+        pauseItem.mnemonic = KeyEvent.VK_P
+        pauseItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
         restartItem.mnemonic = KeyEvent.VK_R
+        restartItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK)
         quitItem.mnemonic = KeyEvent.VK_Q
         quitItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK)
 
+        pauseItem.addActionListener { Game.pause() }
         restartItem.addActionListener { Game.restart() }
         quitItem.addActionListener { exitApplication() }
 
+        add(pauseItem)
         add(restartItem)
         add(quitItem)
     }
