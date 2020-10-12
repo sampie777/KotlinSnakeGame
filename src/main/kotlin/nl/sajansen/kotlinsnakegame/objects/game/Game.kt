@@ -8,7 +8,6 @@ import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.visuals.GameOverlay
 import java.awt.Graphics2D
-import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
@@ -82,11 +81,12 @@ object Game : KeyEventListener, GameObject {
     }
 
     override fun step() {
+        state.time++
         board.step()
     }
 
     override fun paint(): BufferedImage {
-        val (bufferedImage, g: Graphics2D) = createGraphics(board.visibleSize.width, board.visibleSize.height)
+        val (bufferedImage, g: Graphics2D) = createGraphics(board.windowSize.width, board.windowSize.height)
 
         g.drawImage(board.paint(), null, 0, 0)
         g.drawImage(GameOverlay.paint(), null, 0, 0)

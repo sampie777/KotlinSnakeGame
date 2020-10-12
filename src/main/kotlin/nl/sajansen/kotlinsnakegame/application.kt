@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame
 
 import nl.sajansen.kotlinsnakegame.gui.mainFrame.MainFrame
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import java.awt.EventQueue
 import java.util.logging.Logger
 
@@ -15,6 +16,8 @@ fun main(args: Array<String>) {
         MainFrame.createAndShow()
     }
 
-    val player1 = Game.addPlayer()
-    player1.name = "Player 1"
+//    val player1 = Player()
+    val player = SnakePlayer()
+    player.name = "Player 1"
+    Game.addPlayer(player)
 }

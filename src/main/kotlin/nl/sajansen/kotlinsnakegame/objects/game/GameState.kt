@@ -12,6 +12,7 @@ class GameState {
             field = value
             EventHub.runningStateChanged()
         }
+    var time: Long = 0
 }
 
 enum class GameRunningState {

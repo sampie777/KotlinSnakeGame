@@ -6,7 +6,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
 import java.awt.image.BufferedImage
-import java.lang.IllegalArgumentException
+import java.net.URL
 import java.util.logging.Logger
 import javax.imageio.ImageIO
 
@@ -18,7 +18,7 @@ abstract class Sprite : GameObject {
     open var sprite = Sprites.UNKNOWN
     open var solid = true
 
-    private fun spriteResource() = this::class.java.classLoader.getResource(sprite.path)
+    protected fun spriteResource(): URL? = this::class.java.classLoader.getResource(sprite.path)
 
     override fun paint(): BufferedImage {
         val spriteResource =

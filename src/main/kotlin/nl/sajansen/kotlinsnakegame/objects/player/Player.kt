@@ -1,6 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.player
 
 
+import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
@@ -12,13 +13,13 @@ import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 
-class Player : Sprite(), KeyEventListener {
+open class Player : Sprite(), KeyEventListener {
     private val logger = Logger.getLogger(Player::class.java.name)
 
     var name: String = ""
     var direction: Direction = Direction.NONE
-    var speed = 5
-    var score = 0
+    open var speed = 5
+    open var score = 0
         set(value) {
             field = value
             logger.info("Player scores increases to: $value")
@@ -33,21 +34,21 @@ class Player : Sprite(), KeyEventListener {
 
     override fun keyPressed(e: KeyEvent) {
         when (e.keyCode) {
-            KeyEvent.VK_UP -> direction = Direction.NORTH
-            KeyEvent.VK_RIGHT -> direction = Direction.EAST
-            KeyEvent.VK_DOWN -> direction = Direction.SOUTH
-            KeyEvent.VK_LEFT -> direction = Direction.WEST
+            Config.playerUpKey -> direction = Direction.NORTH
+            Config.playerRightKey -> direction = Direction.EAST
+            Config.playerDownKey -> direction = Direction.SOUTH
+            Config.playerLeftKey -> direction = Direction.WEST
         }
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (e.keyCode == KeyEvent.VK_UP && direction == Direction.NORTH) {
+        if (e.keyCode == Config.playerUpKey && direction == Direction.NORTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == KeyEvent.VK_RIGHT && direction == Direction.EAST) {
+        } else if (e.keyCode == Config.playerRightKey && direction == Direction.EAST) {
             direction = Direction.NONE
-        } else if (e.keyCode == KeyEvent.VK_DOWN && direction == Direction.SOUTH) {
+        } else if (e.keyCode == Config.playerDownKey && direction == Direction.SOUTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == KeyEvent.VK_LEFT && direction == Direction.WEST) {
+        } else if (e.keyCode == Config.playerLeftKey && direction == Direction.WEST) {
             direction = Direction.NONE
         }
     }
@@ -64,14 +65,8 @@ class Player : Sprite(), KeyEventListener {
 
     override fun step() {
         val oldPosition = position.clone() as Point
-        when (direction) {
-            Direction.NORTH -> position.y -= speed
-            Direction.EAST -> position.x += speed
-            Direction.SOUTH -> position.y += speed
-            Direction.WEST -> position.x -= speed
-            else -> {
-            }
-        }
+
+        moveToNewPosition()
 
         val spritesAtPosition = Game.board.getSpritesAt(this)
 
@@ -86,7 +81,18 @@ class Player : Sprite(), KeyEventListener {
             }
     }
 
-    private fun consume(food: Food) {
+    protected fun moveToNewPosition() {
+        when (direction) {
+            Direction.NORTH -> position.y -= speed
+            Direction.EAST -> position.x += speed
+            Direction.SOUTH -> position.y += speed
+            Direction.WEST -> position.x -= speed
+            else -> {
+            }
+        }
+    }
+
+    protected fun consume(food: Food) {
         logger.info("Player eats food")
         score += food.points
         food.destroy()

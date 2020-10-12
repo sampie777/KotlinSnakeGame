@@ -1,5 +1,6 @@
 package nl.sajansen.kotlinsnakegame.config
 
+import java.awt.event.KeyEvent
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.logging.Logger
@@ -12,6 +13,14 @@ object Config {
 
     // Game
     var stepInterval: Long = 25
+    var snakeStepInterval = 15
+
+    // Controls
+    var playerUpKey = KeyEvent.VK_UP
+    var playerRightKey = KeyEvent.VK_RIGHT
+    var playerDownKey = KeyEvent.VK_DOWN
+    var playerLeftKey = KeyEvent.VK_LEFT
+    var snakeBoostKey = KeyEvent.VK_SPACE
 
     // String
     var pressKeyToStartMessage = "Press key to start".toUpperCase()

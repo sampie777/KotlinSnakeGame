@@ -2,7 +2,6 @@ package nl.sajansen.kotlinsnakegame.objects.visuals
 
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.gui.utils.drawImageInXCenter
-import nl.sajansen.kotlinsnakegame.gui.utils.drawImageInXYCenter
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -10,7 +9,7 @@ import java.awt.image.BufferedImage
 object GameOverlay {
 
     fun paint(): BufferedImage {
-        val (bufferedImage, g: Graphics2D) = createGraphics(Game.board.visibleSize.width, Game.board.visibleSize.height)
+        val (bufferedImage, g: Graphics2D) = createGraphics(Game.board.windowSize.width, Game.board.windowSize.height)
 
         drawImageInXCenter(g, 0, bufferedImage.width, paintScoreOverlay())
 
