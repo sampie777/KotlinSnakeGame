@@ -116,7 +116,7 @@ class SnakePlayer : Player(), KeyEventListener {
             return true
         }
 
-        if (headIsOutOfBoard()) {
+        if (Config.snakeCollidesWithWalls && headIsOutOfBoard()) {
             Game.end("Snake burst its head against the wall")
             return true
         }
@@ -140,7 +140,7 @@ class SnakePlayer : Player(), KeyEventListener {
         val bodyPart = paintSnakeBodyPart()
 
         val scaledBodyPart = scaleImage(bodyPart, size.width, size.height)
-        lastPositions.forEach {
+        lastPositions.toTypedArray().forEach {
             g.drawImage(scaledBodyPart, null, it.x, it.y)
         }
 

@@ -13,6 +13,9 @@ object Config {
 
     // Game
     var stepInterval: Long = 25
+    var playerWarpsThroughWalls = true
+
+    var snakeCollidesWithWalls = !playerWarpsThroughWalls
     var snakeStepInterval = 15
 
     // Controls

@@ -90,6 +90,22 @@ open class Player : Sprite(), KeyEventListener {
             else -> {
             }
         }
+
+        if (!Config.playerWarpsThroughWalls) {
+            return
+        }
+
+        if (position.x + size.width / 2 < 0) {
+            position.x = Game.board.size.width - size.width
+        } else if (position.x + size.width / 2 > Game.board.size.width) {
+            position.x = 0
+        }
+
+        if (position.y + size.height / 2 < 0) {
+            position.y = Game.board.size.height - size.height
+        } else if (position.y + size.height / 2 > Game.board.size.height) {
+            position.y = 0
+        }
     }
 
     protected fun consume(food: Food) {
