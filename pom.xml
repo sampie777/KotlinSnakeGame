@@ -6,7 +6,7 @@
 
     <artifactId>KotlinSnakeGame</artifactId>
     <groupId>nl.sajansen</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>KotlinSnakeGame</name>
@@ -32,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
@@ -40,11 +40,6 @@
             <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>1.4.10</version>
         </dependency>
     </dependencies>
 
@@ -86,7 +81,7 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>${kotlin.compiler.jvmTarget}</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>
@@ -165,7 +160,7 @@
                             <stayAlive>false</stayAlive>
                             <restartOnCrash>false</restartOnCrash>
                             <manifest/>
-                            <icon>src/main/resources/icon.ico</icon>
+<!--                            <icon>src/main/resources/icon.ico</icon>-->
                             <jre>
                                 <path/>
                                 <bundledJre64Bit>false</bundledJre64Bit>

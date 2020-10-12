@@ -5,6 +5,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.EventQueue
 import java.util.logging.Logger
 
+@Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>) {
     val logger = Logger.getLogger("Application")
     logger.info("Starting application ${ApplicationInfo.artifactId}:${ApplicationInfo.version}")
