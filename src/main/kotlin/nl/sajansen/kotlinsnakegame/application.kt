@@ -38,5 +38,5 @@ fun main(args: Array<String>) {
     )
 
     Game.addPlayer(player)
-    Game.addPlayer(player2)
+//    Game.addPlayer(player2)
 }

@@ -47,7 +47,7 @@ class SnakePlayer(
     }
 
     override fun reset() {
-        direction = Direction.NONE
+        direction = if(Config.snakeOnlyLeftRightControls) Direction.EAST else Direction.NONE
         score = 3
         nextUpdateTime = 0
         boostSpeed(false)
@@ -72,17 +72,28 @@ class SnakePlayer(
     }
 
     override fun keyPressed(e: KeyEvent) {
-        when (e.keyCode) {
-            upKey -> direction = Direction.NORTH
-            rightKey -> direction = Direction.EAST
-            downKey -> direction = Direction.SOUTH
-            leftKey -> direction = Direction.WEST
+        if (Config.snakeOnlyLeftRightControls) {
+            when (e.keyCode) {
+                rightKey -> direction = directionForRightTurn()
+                leftKey -> direction = directionForLeftTurn()
+            }
+        } else {
+            when (e.keyCode) {
+                upKey -> direction = Direction.NORTH
+                rightKey -> direction = Direction.EAST
+                downKey -> direction = Direction.SOUTH
+                leftKey -> direction = Direction.WEST
+            }
         }
 
         if (e.keyCode == Config.snakeBoostKey) {
             boostSpeed(true)
         }
     }
+
+    private fun directionForLeftTurn() = Direction.fromValue((8 + direction.value - 2) % 8) ?: Direction.NONE
+
+    private fun directionForRightTurn() = Direction.fromValue((direction.value + 2) % 8) ?: Direction.NONE
 
     override fun keyReleased(e: KeyEvent) {
         if (e.keyCode == Config.snakeBoostKey) {

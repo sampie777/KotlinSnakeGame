@@ -17,6 +17,7 @@ object Config {
 
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
     var snakeStepInterval = 15
+    var snakeOnlyLeftRightControls = true
 
     // Controls
     var player1UpKey = KeyEvent.VK_UP
