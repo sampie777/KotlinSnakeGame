@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame.objects.player
 
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.Sprite
@@ -12,23 +13,31 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import java.awt.Point
 import java.awt.event.KeyEvent
-import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class SnakePlayer : Player(), KeyEventListener {
+class SnakePlayer : Player, KeyEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
-    override var speed = size.width
-
     // Just some empty values, see reset() for the real values
-    override var score = 0
     private var updateInterval = 0
     private var nextUpdateTime: Long = 0
     private var headEntity = SnakeHead()
     private var bodyEntities = arrayListOf<SnakeBody>()
+    override var score = 0
+        set(value) {
+            field = value
+            logger.info("Player scores increases to: $value")
+        }
+
+    override var name: String = "Player"
+    private var direction: Direction = Direction.NONE
+    private var speed = Game.board.gridSize
+
+    init {
+        EventHub.register(this)
+    }
 
     override fun reset() {
-        position = Point(0, 0)
         direction = Direction.NONE
         score = 3
         nextUpdateTime = 0
@@ -43,7 +52,7 @@ class SnakePlayer : Player(), KeyEventListener {
 
         // Creating new head
         headEntity = SnakeHead()
-        headEntity.position = position
+        headEntity.position = Point(0, 0)
         Game.board.entities.add(headEntity)
 
         // Creating new body
@@ -54,7 +63,12 @@ class SnakePlayer : Player(), KeyEventListener {
     }
 
     override fun keyPressed(e: KeyEvent) {
-        super<Player>.keyPressed(e)
+        when (e.keyCode) {
+            Config.playerUpKey -> direction = Direction.NORTH
+            Config.playerRightKey -> direction = Direction.EAST
+            Config.playerDownKey -> direction = Direction.SOUTH
+            Config.playerLeftKey -> direction = Direction.WEST
+        }
 
         if (e.keyCode == Config.snakeBoostKey) {
             boostSpeed(true)
@@ -75,6 +89,11 @@ class SnakePlayer : Player(), KeyEventListener {
         }
     }
 
+    override fun destroy() {
+        logger.warning("Cannot destroy snake player object")
+        Game.end("Player is destroyed")
+    }
+
     override fun step() {
         if (Game.state.runningState != GameRunningState.STARTED) {
             return
@@ -86,9 +105,8 @@ class SnakePlayer : Player(), KeyEventListener {
 
         updateBodyPositions()
         moveToNewPosition()
-        updateHeadPosition()
 
-        val spritesAtPosition = Game.board.getSpritesAt(headEntity).filter { it != this }
+        val spritesAtPosition = Game.board.getSpritesAt(headEntity)
         if (checkForCollision(spritesAtPosition)) {
             return
         }
@@ -110,13 +128,40 @@ class SnakePlayer : Player(), KeyEventListener {
         return true
     }
 
+    private fun moveToNewPosition() {
+        when (direction) {
+            Direction.NORTH -> headEntity.position.y -= speed
+            Direction.EAST -> headEntity.position.x += speed
+            Direction.SOUTH -> headEntity.position.y += speed
+            Direction.WEST -> headEntity.position.x -= speed
+            else -> {
+            }
+        }
+
+        if (!Config.playerWarpsThroughWalls) {
+            return
+        }
+
+        if (headEntity.position.x + headEntity.size.width / 2 < 0) {
+            headEntity.position.x = Game.board.size.width - headEntity.size.width
+        } else if (headEntity.position.x + headEntity.size.width / 2 > Game.board.size.width) {
+            headEntity.position.x = 0
+        }
+
+        if (headEntity.position.y + headEntity.size.height / 2 < 0) {
+            headEntity.position.y = Game.board.size.height - headEntity.size.height
+        } else if (headEntity.position.y + headEntity.size.height / 2 > Game.board.size.height) {
+            headEntity.position.y = 0
+        }
+    }
+
     private fun checkForCollision(spritesAtPosition: List<Sprite>): Boolean {
         if (direction == Direction.NONE) {
             return false
         }
 
         if (spritesAtPosition.any { it.solid }) {
-            Game.end("Snake burst its head at $position")
+            Game.end("Snake burst its head at ${headEntity.position}")
             return true
         }
 
@@ -133,12 +178,8 @@ class SnakePlayer : Player(), KeyEventListener {
     }
 
     private fun headIsOutOfBoard(): Boolean {
-        return headEntity.position.x < 0 || headEntity.position.x + size.width > Game.board.size.width
-                || headEntity.position.y < 0 || headEntity.position.y + size.height > Game.board.size.height
-    }
-
-    private fun updateHeadPosition() {
-        headEntity.position = position
+        return headEntity.position.x < 0 || headEntity.position.x + headEntity.size.width > Game.board.size.width
+                || headEntity.position.y < 0 || headEntity.position.y + headEntity.size.height > Game.board.size.height
     }
 
     private fun addBodyEntityAt(point: Point, index: Int? = null) {
@@ -161,7 +202,9 @@ class SnakePlayer : Player(), KeyEventListener {
         addBodyEntityAt(headEntity.position)
     }
 
-    override fun paint(): BufferedImage {
-        return BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+    private fun consume(food: Food) {
+        logger.info("Player eats food")
+        score += food.points
+        food.destroy()
     }
 }

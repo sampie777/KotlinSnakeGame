@@ -61,10 +61,6 @@ object Game : KeyEventListener {
         }
     }
 
-    fun addPlayer(): Player {
-        return addPlayer(Player())
-    }
-
     fun addPlayer(player: Player): Player {
         players.add(player)
         return player

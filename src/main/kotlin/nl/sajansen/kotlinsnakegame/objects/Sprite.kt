@@ -19,7 +19,7 @@ abstract class Sprite : Entity {
 
     protected fun spriteResource(): URL? = this::class.java.classLoader.getResource(sprite.path)
 
-    override fun paint(): BufferedImage {
+    fun paint(): BufferedImage {
         val spriteResource =
             spriteResource() ?: throw IllegalArgumentException("Sprite resource not found: ${sprite.path}")
         val image = ImageIO.read(spriteResource)

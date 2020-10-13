@@ -35,6 +35,7 @@ class MainFrame : JFrame() {
         jMenuBar = MenuBar()
         title = ApplicationInfo.name
         defaultCloseOperation = EXIT_ON_CLOSE
+        isResizable = false
         pack()
     }
 }

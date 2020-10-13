@@ -9,7 +9,6 @@ import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
-import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Point
@@ -17,14 +16,14 @@ import java.awt.image.BufferedImage
 import java.util.logging.Logger
 import kotlin.random.Random
 
-class Board : Entity {
+class Board {
     private val logger = Logger.getLogger(Board::class.java.name)
 
-    var size = Dimension(900, 600)
-    var windowSize = Dimension(900, 600)
-    var windowPosition = Point(0, 0)
-    var entities = arrayListOf<Sprite>()
     var gridSize = 32
+    var size = Dimension(28 * gridSize, 18 * gridSize)
+    var windowSize = Dimension(28 * gridSize, 18 * gridSize)
+    var windowPosition = Point(0, 0)
+    var entities = arrayListOf<Entity>()
 
     init {
         loadBoard1()
@@ -36,27 +35,29 @@ class Board : Entity {
         spawnRandomFood()
     }
 
-    private fun allSprites() = Game.players + entities
+    private fun spriteEntities() = entities.filterIsInstance<Sprite>()
 
-    override fun reset() {
+    fun reset() {
         entities.clear()
+
+        entities.addAll(Game.players)
         loadBoard1()
 
-        Game.players.forEach {
+        entities.toTypedArray().forEach {
             it.reset()
         }
     }
 
-    override fun step() {
-        allSprites().forEach {
+    fun step() {
+        entities.toTypedArray().forEach {
             it.step()
         }
     }
 
-    override fun paint(): BufferedImage {
+    fun paint(): BufferedImage {
         val (bufferedImage, g: Graphics2D) = createGraphics(size.width, size.height)
 
-        paintSprites(g, allSprites())
+        paintSprites(g, spriteEntities())
 
         g.dispose()
         return bufferedImage.getSubimage(windowPosition.x, windowPosition.y, windowSize.width, windowSize.height)
@@ -64,21 +65,17 @@ class Board : Entity {
 
     private fun paintSprites(g: Graphics2D, sprites: List<Sprite>) {
         sprites.forEach {
-            if (it is SnakePlayer) {
-               g.drawImage(it.paint(), null, 0, 0)
-            } else {
-                g.drawImage(it.paint(), null, it.position.x, it.position.y)
-            }
+            g.drawImage(it.paint(), null, it.position.x, it.position.y)
         }
     }
 
     fun getSpritesAt(sprite: Sprite): List<Sprite> {
-        return allSprites().filter { it != sprite }
+        return spriteEntities().filter { it != sprite }
             .filter { isSpriteInSprite(sprite, it) }
     }
 
     fun getSpritesAt(position: Point): List<Sprite> {
-        return allSprites().filter { isPointInSprite(position, it) }
+        return spriteEntities().filter { isPointInSprite(position, it) }
     }
 
     fun spawnRandomFood() {

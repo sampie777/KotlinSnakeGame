@@ -6,8 +6,10 @@ import nl.sajansen.kotlinsnakegame.gui.utils.drawImageInXYCenter
 import nl.sajansen.kotlinsnakegame.gui.utils.setDefaultRenderingHints
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
-import java.awt.*
-import java.util.*
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics
+import java.awt.Graphics2D
 import java.util.logging.Logger
 import javax.swing.JPanel
 import javax.swing.Timer
@@ -32,7 +34,7 @@ class MainFramePanel : JPanel() {
     }
 
     private fun initGui() {
-        preferredSize = Dimension(900, 600)
+        preferredSize = Game.board.windowSize
     }
 
     private fun screenUpdateTimerStep() {
