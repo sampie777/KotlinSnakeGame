@@ -18,7 +18,8 @@ import java.util.logging.Logger
 
 class SnakePlayer(
     override var name: String = "Player",
-    var color: Color = Color(0, 0, 0, 0)
+    var color: Color = Color(0, 0, 0, 0),
+    var startPosition: Point = Point(0, 0)
 ) : Player, KeyEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
@@ -47,7 +48,7 @@ class SnakePlayer(
     }
 
     override fun reset() {
-        direction = if(Config.snakeOnlyLeftRightControls) Direction.EAST else Direction.NONE
+        direction = if(Config.snakeOnlyLeftRightControls) Direction.SOUTH else Direction.NONE
         score = 3
         nextUpdateTime = 0
         boostSpeed(false)
@@ -61,7 +62,7 @@ class SnakePlayer(
 
         // Creating new head
         headEntity = SnakeHead(this)
-        headEntity.position = Point(0, 0)
+        headEntity.position = startPosition.clone() as Point
         Game.board.entities.add(headEntity)
 
         // Creating new body
