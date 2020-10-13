@@ -18,7 +18,7 @@ object GameStepTimer {
     }
 
     private fun start() {
-        logger.info("Scheduling GameStepTimer every ${1000 / Config.paintFPS} milliseconds")
+        logger.info("Scheduling GameStepTimer every ${1000 / Config.stepInterval} milliseconds")
         timer.schedule(object : TimerTask() {
             override fun run() {
                 updateTimerStep()

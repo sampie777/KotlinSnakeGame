@@ -30,12 +30,13 @@ class Board {
     }
 
     private fun loadBoard1() {
-        entities.add(Box(Point(100, 60)))
-        entities.add(Box(Point(311, 98)))
+        entities.add(Box(Point(3 * gridSize, 2 * gridSize)))
+        entities.add(Box(Point(10 * gridSize, 3 * gridSize)))
+        entities.add(Box(Point(21 * gridSize, 11 * gridSize)))
         spawnRandomFood()
     }
 
-    private fun spriteEntities() = entities.filterIsInstance<Sprite>()
+    private fun spriteEntities() = entities.toTypedArray().filterIsInstance<Sprite>()
 
     fun reset() {
         entities.clear()
@@ -84,7 +85,7 @@ class Board {
         val maxX = size.width / gridSize
         val maxY = size.height / gridSize
 
-        val maxTries = 100
+        val maxTries = 2 * maxX * maxY
         var currentTry = 0
         do {
             if (currentTry++ > maxTries) {
