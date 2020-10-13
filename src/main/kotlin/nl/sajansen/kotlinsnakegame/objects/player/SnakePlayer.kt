@@ -11,6 +11,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
+import java.awt.Color
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
@@ -21,7 +22,7 @@ class SnakePlayer : Player, KeyEventListener {
     // Just some empty values, see reset() for the real values
     private var updateInterval = 0
     private var nextUpdateTime: Long = 0
-    private var headEntity = SnakeHead()
+    private var headEntity = SnakeHead(this)
     private var bodyEntities = arrayListOf<SnakeBody>()
     override var score = 0
         set(value) {
@@ -30,8 +31,14 @@ class SnakePlayer : Player, KeyEventListener {
         }
 
     override var name: String = "Player"
+    var color: Color = Color(0, 0, 0, 0)
     private var direction: Direction = Direction.NONE
     private var speed = Game.board.gridSize
+    // Controls
+    private var upKey: Int = Config.player1UpKey
+    private var rightKey: Int = Config.player1RightKey
+    private var downKey: Int = Config.player1DownKey
+    private var leftKey: Int = Config.player1LeftKey
 
     init {
         EventHub.register(this)
@@ -51,7 +58,7 @@ class SnakePlayer : Player, KeyEventListener {
         bodyEntities.forEach { it.destroy() }
 
         // Creating new head
-        headEntity = SnakeHead()
+        headEntity = SnakeHead(this)
         headEntity.position = Point(0, 0)
         Game.board.entities.add(headEntity)
 
@@ -64,10 +71,10 @@ class SnakePlayer : Player, KeyEventListener {
 
     override fun keyPressed(e: KeyEvent) {
         when (e.keyCode) {
-            Config.playerUpKey -> direction = Direction.NORTH
-            Config.playerRightKey -> direction = Direction.EAST
-            Config.playerDownKey -> direction = Direction.SOUTH
-            Config.playerLeftKey -> direction = Direction.WEST
+            upKey -> direction = Direction.NORTH
+            rightKey -> direction = Direction.EAST
+            downKey -> direction = Direction.SOUTH
+            leftKey -> direction = Direction.WEST
         }
 
         if (e.keyCode == Config.snakeBoostKey) {
@@ -183,7 +190,7 @@ class SnakePlayer : Player, KeyEventListener {
     }
 
     private fun addBodyEntityAt(point: Point, index: Int? = null) {
-        val entity = SnakeBody()
+        val entity = SnakeBody(this)
         entity.position = point.clone() as Point
         Game.board.entities.add(entity)
 
@@ -206,5 +213,12 @@ class SnakePlayer : Player, KeyEventListener {
         logger.info("Player eats food")
         score += food.points
         food.destroy()
+    }
+
+    fun setControls(up: Int, right: Int, down: Int, left: Int) {
+        upKey = up
+        rightKey = right
+        downKey = down
+        leftKey = left
     }
 }

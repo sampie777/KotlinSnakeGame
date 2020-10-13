@@ -17,9 +17,9 @@ abstract class Sprite : Entity {
     open var sprite = Sprites.UNKNOWN
     open var solid = true
 
-    protected fun spriteResource(): URL? = this::class.java.classLoader.getResource(sprite.path)
+    private fun spriteResource(): URL? = this::class.java.classLoader.getResource(sprite.path)
 
-    fun paint(): BufferedImage {
+    open fun paint(): BufferedImage {
         val spriteResource =
             spriteResource() ?: throw IllegalArgumentException("Sprite resource not found: ${sprite.path}")
         val image = ImageIO.read(spriteResource)

@@ -19,11 +19,15 @@ object Config {
     var snakeStepInterval = 15
 
     // Controls
-    var playerUpKey = KeyEvent.VK_UP
-    var playerRightKey = KeyEvent.VK_RIGHT
-    var playerDownKey = KeyEvent.VK_DOWN
-    var playerLeftKey = KeyEvent.VK_LEFT
+    var player1UpKey = KeyEvent.VK_UP
+    var player1RightKey = KeyEvent.VK_RIGHT
+    var player1DownKey = KeyEvent.VK_DOWN
+    var player1LeftKey = KeyEvent.VK_LEFT
     var snakeBoostKey = KeyEvent.VK_SPACE
+    var player2UpKey = KeyEvent.VK_W
+    var player2RightKey = KeyEvent.VK_D
+    var player2DownKey = KeyEvent.VK_S
+    var player2LeftKey = KeyEvent.VK_A
 
     // String
     var pressKeyToStartMessage = "Press key to start".toUpperCase()

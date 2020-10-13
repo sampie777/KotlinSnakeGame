@@ -39,21 +39,21 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
 
     override fun keyPressed(e: KeyEvent) {
         when (e.keyCode) {
-            Config.playerUpKey -> direction = Direction.NORTH
-            Config.playerRightKey -> direction = Direction.EAST
-            Config.playerDownKey -> direction = Direction.SOUTH
-            Config.playerLeftKey -> direction = Direction.WEST
+            Config.player1UpKey -> direction = Direction.NORTH
+            Config.player1RightKey -> direction = Direction.EAST
+            Config.player1DownKey -> direction = Direction.SOUTH
+            Config.player1LeftKey -> direction = Direction.WEST
         }
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (e.keyCode == Config.playerUpKey && direction == Direction.NORTH) {
+        if (e.keyCode == Config.player1UpKey && direction == Direction.NORTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.playerRightKey && direction == Direction.EAST) {
+        } else if (e.keyCode == Config.player1RightKey && direction == Direction.EAST) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.playerDownKey && direction == Direction.SOUTH) {
+        } else if (e.keyCode == Config.player1DownKey && direction == Direction.SOUTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.playerLeftKey && direction == Direction.WEST) {
+        } else if (e.keyCode == Config.player1LeftKey && direction == Direction.WEST) {
             direction = Direction.NONE
         }
     }
