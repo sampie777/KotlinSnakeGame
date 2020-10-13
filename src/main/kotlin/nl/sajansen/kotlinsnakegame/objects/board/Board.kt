@@ -6,6 +6,7 @@ import nl.sajansen.kotlinsnakegame.objects.Entity
 import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Box
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
@@ -34,6 +35,8 @@ class Board {
             val randomPoint = getRandomEmptyPoint(Box().size) ?: return@repeat
             entities.add(Box(randomPoint))
         }
+
+        entities.add(Star(Point(32, 32)))
 
         spawnRandomFood()
     }
