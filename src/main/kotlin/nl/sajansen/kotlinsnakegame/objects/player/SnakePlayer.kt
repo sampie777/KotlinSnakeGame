@@ -16,7 +16,10 @@ import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 
-class SnakePlayer : Player, KeyEventListener {
+class SnakePlayer(
+    override var name: String = "Player",
+    var color: Color = Color(0, 0, 0, 0)
+) : Player, KeyEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
     // Just some empty values, see reset() for the real values
@@ -30,10 +33,9 @@ class SnakePlayer : Player, KeyEventListener {
             logger.info("Player scores increases to: $value")
         }
 
-    override var name: String = "Player"
-    var color: Color = Color(0, 0, 0, 0)
     private var direction: Direction = Direction.NONE
     private var speed = Game.board.gridSize
+
     // Controls
     private var upKey: Int = Config.player1UpKey
     private var rightKey: Int = Config.player1RightKey
@@ -167,21 +169,42 @@ class SnakePlayer : Player, KeyEventListener {
             return false
         }
 
-        if (spritesAtPosition.any { it.solid }) {
-            Game.end("Snake burst its head at ${headEntity.position}")
-            return true
-        }
-
-        if (bodyEntities.any { it.position.x == headEntity.position.x && it.position.y == headEntity.position.y }) {
-            Game.end("Snake burst its head against itself at ${headEntity.position}")
-            return true
-        }
-
         if (Config.snakeCollidesWithWalls && headIsOutOfBoard()) {
-            Game.end("Snake burst its head against the wall at ${headEntity.position}")
+            Game.end("$name burst its head against the wall")
             return true
         }
-        return false
+
+        if (!spritesAtPosition.any { it.solid }) {
+            return false
+        }
+
+        // Handle sprite collisions
+
+        val snakeParts = spritesAtPosition.filter { it is SnakeHead || it is SnakeBody }
+        if (snakeParts.isEmpty()) {
+            Game.end("$name burst its head")
+            return true
+        }
+
+        if (snakeParts.any { it is SnakeBody && it.snakePlayer == this }) {
+            Game.end("Snake ate itself")
+            return true
+        }
+
+        val otherSnakeHead = snakeParts.find { it is SnakeHead }
+        if (otherSnakeHead != null) {
+            Game.end("Head to head collision between $name and ${(otherSnakeHead as SnakeHead).snakePlayer.name}")
+            return true
+        }
+
+        val otherSnakeBody = snakeParts.find { it is SnakeBody }
+        if (otherSnakeBody != null) {
+            Game.end("$name ran into ${(otherSnakeBody as SnakeBody).snakePlayer.name}")
+            return true
+        }
+
+        Game.end("$name collided with someone")
+        return true
     }
 
     private fun headIsOutOfBoard(): Boolean {

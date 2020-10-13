@@ -18,8 +18,7 @@ fun main(args: Array<String>) {
         MainFrame.createAndShow()
     }
 
-    val player = SnakePlayer()
-    player.name = "Player 1"
+    val player = SnakePlayer(name = "Player 1")
     player.setControls(
         up = Config.player1UpKey,
         right = Config.player1RightKey,
@@ -27,9 +26,10 @@ fun main(args: Array<String>) {
         left = Config.player1LeftKey
     )
 
-    val player2 = SnakePlayer()
-    player2.name = "Player 2"
-    player.color = Color(0, 0, 255, 100)
+    val player2 = SnakePlayer(
+        name = "Player 2",
+        color = Color(0, 0, 255, 100)
+    )
     player2.setControls(
         up = Config.player2UpKey,
         right = Config.player2RightKey,

@@ -110,5 +110,14 @@ class MainFramePanel : JPanel() {
 
         g.color = Color.WHITE
         g.drawString(message, (width - textWidth) / 2, ((height + textHeight * 0.7) / 2).roundToInt())
+
+        g.font = Font("Dialog", Font.PLAIN, 22)
+
+        val message2 = Game.deathMessage
+        val textWidth2 = g.fontMetrics.stringWidth(message2)
+        val textHeight2 = g.fontMetrics.height
+
+        g.color = Color(230, 230, 230)
+        g.drawString(message2, (width - textWidth2) / 2, textHeight + ((height + textHeight2 * 0.7) / 2).roundToInt())
     }
 }

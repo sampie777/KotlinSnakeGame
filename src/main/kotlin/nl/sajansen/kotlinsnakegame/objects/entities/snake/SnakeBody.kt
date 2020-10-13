@@ -8,7 +8,7 @@ import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class SnakeBody(private val snakePlayer: SnakePlayer) : Sprite() {
+class SnakeBody(val snakePlayer: SnakePlayer) : Sprite() {
     private val logger = Logger.getLogger(SnakeBody::class.java.name)
 
     override var sprite = Sprites.SNAKE_BODY_1

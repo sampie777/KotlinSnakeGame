@@ -17,6 +17,7 @@ object Game : KeyEventListener {
     var state = GameState()
     var players = arrayListOf<Player>()
     var board = Board()
+    var deathMessage = ""
 
     init {
         EventHub.register(this)
@@ -68,6 +69,7 @@ object Game : KeyEventListener {
 
     fun end(reason: String) {
         logger.info("Game ended: $reason")
+        deathMessage = reason
         state.runningState = GameRunningState.ENDED
     }
 
