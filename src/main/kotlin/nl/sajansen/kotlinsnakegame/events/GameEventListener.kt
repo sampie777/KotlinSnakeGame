@@ -1,5 +1,5 @@
 package nl.sajansen.kotlinsnakegame.events
 
-interface GameEventListener {
+interface GameEventListener : EventListener {
     fun runningStateChanged() {}
 }

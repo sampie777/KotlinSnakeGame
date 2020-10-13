@@ -10,6 +10,7 @@ object Config {
 
     // GUI
     var paintFPS: Long = 25
+    var fontFamily = "Dialog"
 
     // Game
     var stepInterval: Long = 25

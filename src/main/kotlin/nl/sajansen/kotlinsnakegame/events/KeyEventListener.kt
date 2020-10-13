@@ -3,7 +3,7 @@ package nl.sajansen.kotlinsnakegame.events
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 
-interface KeyEventListener : KeyListener {
+interface KeyEventListener : EventListener, KeyListener {
 
     override fun keyTyped(e: KeyEvent) {}
 

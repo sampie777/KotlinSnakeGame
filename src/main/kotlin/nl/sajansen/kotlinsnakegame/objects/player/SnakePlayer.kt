@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame.objects.player
 
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.events.ConfigEventListener
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
@@ -15,12 +16,13 @@ import java.awt.Color
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
+import kotlin.math.max
 
 class SnakePlayer(
     override var name: String = "Player",
     var color: Color = Color(0, 0, 0, 0),
     var startPosition: Point? = null
-) : Player, KeyEventListener {
+) : Player, KeyEventListener, ConfigEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
     // Just some empty values, see reset() for the real values
@@ -104,9 +106,15 @@ class SnakePlayer(
         }
     }
 
+    override fun propertyUpdated(name: String, value: Any?) {
+        if (name == "snakeStepInterval") {
+            updateInterval = Config.snakeStepInterval
+        }
+    }
+
     private fun boostSpeed(enable: Boolean) {
         updateInterval = if (enable) {
-            5
+            max(1, Config.snakeStepInterval / 3)
         } else {
             Config.snakeStepInterval
         }

@@ -71,6 +71,7 @@ class MainFramePanel : JPanel() {
             else -> {
             }
         }
+
         drawImageInXYCenter(g, width, height, Game.paint())
     }
 

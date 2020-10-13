@@ -1,6 +1,8 @@
 package nl.sajansen.kotlinsnakegame.gui.menu
 
 import nl.sajansen.kotlinsnakegame.exitApplication
+import nl.sajansen.kotlinsnakegame.gui.config.ConfigFrame
+import nl.sajansen.kotlinsnakegame.gui.utils.getMainFrameComponent
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
@@ -21,6 +23,7 @@ class ApplicationMenu : JMenu("Application") {
 
         val pauseItem = JMenuItem("Pause")
         val restartItem = JMenuItem("Restart")
+        val settingsItem = JMenuItem("Settings")
         val quitItem = JMenuItem("Quit")
 
         // Set alt keys
@@ -28,15 +31,20 @@ class ApplicationMenu : JMenu("Application") {
         pauseItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
         restartItem.mnemonic = KeyEvent.VK_R
         restartItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK)
+        settingsItem.mnemonic = KeyEvent.VK_S
+        settingsItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK.or(InputEvent.ALT_MASK))
         quitItem.mnemonic = KeyEvent.VK_Q
         quitItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK)
 
         pauseItem.addActionListener { Game.pause() }
         restartItem.addActionListener { Game.restart() }
+        settingsItem.addActionListener { ConfigFrame(getMainFrameComponent(this)) }
         quitItem.addActionListener { exitApplication() }
 
         add(pauseItem)
         add(restartItem)
+        addSeparator()
+        add(settingsItem)
         add(quitItem)
     }
 }

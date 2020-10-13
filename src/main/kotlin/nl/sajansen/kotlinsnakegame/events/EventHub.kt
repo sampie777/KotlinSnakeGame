@@ -3,20 +3,30 @@ package nl.sajansen.kotlinsnakegame.events
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 
-object EventHub : GameEventListener, KeyEventListener {
+object EventHub : GameEventListener, KeyEventListener, ConfigEventListener {
     private val logger = Logger.getLogger(EventHub::class.java.name)
 
     private val gameEventListeners = hashSetOf<GameEventListener>()
     private val keyEventListener = hashSetOf<KeyEventListener>()
+    private val configEventListener = hashSetOf<ConfigEventListener>()
 
-    fun register(listener: GameEventListener) {
-        logger.info("Adding GameEventListener")
-        gameEventListeners.add(listener)
-    }
+    fun register(listener: EventListener) {
+        logger.info("Adding EventListener: ${listener.javaClass.name}")
 
-    fun register(listener: KeyEventListener) {
-        logger.info("Adding KeyEventListener")
-        keyEventListener.add(listener)
+        if (listener is GameEventListener) {
+            logger.info("Adding GameEventListener")
+            gameEventListeners.add(listener)
+        }
+
+        if (listener is KeyEventListener) {
+            logger.info("Adding KeyEventListener")
+            keyEventListener.add(listener)
+        }
+
+        if (listener is ConfigEventListener) {
+            logger.info("Adding ConfigEventListener")
+            configEventListener.add(listener)
+        }
     }
 
     /**
@@ -52,6 +62,17 @@ object EventHub : GameEventListener, KeyEventListener {
         logger.finer("Sending KeyEventListener.keyReleased event")
         keyEventListener.toTypedArray().forEach {
             it.keyReleased(e)
+        }
+    }
+
+    /**
+     * ConfigEventListener events
+     */
+
+    override fun propertyUpdated(name: String, value: Any?) {
+        logger.finer("Sending ConfigEventListener.propertyUpdated event")
+        configEventListener.toTypedArray().forEach {
+            it.propertyUpdated(name, value)
         }
     }
 }
