@@ -2,12 +2,20 @@ package nl.sajansen.kotlinsnakegame.objects
 
 import java.awt.AlphaComposite
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Point
 import java.awt.image.BufferedImage
 
 fun isPointInSprite(point: Point, sprite: Sprite): Boolean {
     return point.x > sprite.position.x && point.x < sprite.position.x + sprite.size.width &&
             point.y > sprite.position.y && point.y < sprite.position.y + sprite.size.height
+}
+
+fun isPointInSprite(point: Point, size: Dimension, sprite: Sprite): Boolean {
+    return point.x + size.width > sprite.position.x
+            && point.x < sprite.position.x + sprite.size.width
+            && point.y + size.height > sprite.position.y
+            && point.y < sprite.position.y + sprite.size.height
 }
 
 fun isSpriteInSprite(sprite1: Sprite, sprite2: Sprite): Boolean {

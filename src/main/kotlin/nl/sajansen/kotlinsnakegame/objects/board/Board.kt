@@ -30,9 +30,11 @@ class Board {
     }
 
     private fun loadBoard1() {
-        entities.add(Box(Point(3 * gridSize, 2 * gridSize)))
-        entities.add(Box(Point(10 * gridSize, 3 * gridSize)))
-        entities.add(Box(Point(21 * gridSize, 11 * gridSize)))
+        repeat(Random.nextInt(3, 9)) {
+            val randomPoint = getRandomEmptyPoint(Box().size) ?: return@repeat
+            entities.add(Box(randomPoint))
+        }
+
         spawnRandomFood()
     }
 
@@ -79,24 +81,56 @@ class Board {
         return spriteEntities().filter { isPointInSprite(position, it) }
     }
 
+    fun getSpritesAt(position: Point, size: Dimension): List<Sprite> {
+        return spriteEntities().filter { isPointInSprite(position, size, it) }
+    }
+
     fun spawnRandomFood() {
         val food = Food(Point(0, 0))
 
-        val maxX = size.width / gridSize
-        val maxY = size.height / gridSize
+        val randomPoint = getRandomEmptyPoint(food.size)
+        if (randomPoint == null) {
+            logger.warning("Could not spawn new food: no empty random location found")
+            Game.end("No room left for food")
+            return
+        }
+
+        food.position = randomPoint
+        entities.add(food)
+    }
+
+    fun getRandomEmptyPoint(size: Dimension): Point? {
+        val maxX = this.size.width / gridSize
+        val maxY = this.size.height / gridSize
+
+        var point = Point(0, 0)
 
         val maxTries = 2 * maxX * maxY
-        var currentTry = 0
-        do {
-            if (currentTry++ > maxTries) {
-                logger.warning("Could not spawn new food: no empty random location found")
-                Game.end("No room left for food")
-                break
-            }
-            food.position.x = Random.nextInt(0, maxX) * gridSize + (gridSize - food.size.width) / 2
-            food.position.y = Random.nextInt(0, maxY) * gridSize + (gridSize - food.size.height) / 2
-        } while (getSpritesAt(food).isNotEmpty())
+        for (currentTry in 0..maxTries) {
+            point.x = Random.nextInt(0, maxX) * gridSize + (gridSize - size.width) / 2
+            point.y = Random.nextInt(0, maxY) * gridSize + (gridSize - size.height) / 2
 
-        entities.add(food)
+            if (getSpritesAt(point, size).isEmpty()) {
+                return point
+            }
+        }
+
+        logger.warning("Could not find a random empty spot. Trying to find non random empty spot")
+
+        // Scan all possible points
+        point = Point(0, 0)
+        (0 until maxX).forEach { x ->
+            (0 until maxY).forEach { y ->
+                point.x = x
+                point.y = y
+
+                if (getSpritesAt(point, size).isEmpty()) {
+                    return point
+                }
+            }
+        }
+
+        logger.warning("No empty spot found on board")
+        return null
     }
 }

@@ -19,14 +19,14 @@ import java.util.logging.Logger
 class SnakePlayer(
     override var name: String = "Player",
     var color: Color = Color(0, 0, 0, 0),
-    var startPosition: Point = Point(0, 0)
+    var startPosition: Point? = null
 ) : Player, KeyEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
     // Just some empty values, see reset() for the real values
     private var updateInterval = 0
     private var nextUpdateTime: Long = 0
-    private var headEntity = SnakeHead(this)
+    var headEntity = SnakeHead(this)
     private var bodyEntities = arrayListOf<SnakeBody>()
     override var score = 0
         set(value) {
@@ -48,7 +48,7 @@ class SnakePlayer(
     }
 
     override fun reset() {
-        direction = if(Config.snakeOnlyLeftRightControls) Direction.SOUTH else Direction.NONE
+        direction = if (Config.snakeOnlyLeftRightControls) Direction.SOUTH else Direction.NONE
         score = 3
         nextUpdateTime = 0
         boostSpeed(false)
@@ -60,9 +60,11 @@ class SnakePlayer(
         headEntity.destroy()
         bodyEntities.forEach { it.destroy() }
 
+        setRandomStartPosition()
+
         // Creating new head
         headEntity = SnakeHead(this)
-        headEntity.position = startPosition.clone() as Point
+        headEntity.position = startPosition?.clone() as Point? ?: Point(0, 0)
         Game.board.entities.add(headEntity)
 
         // Creating new body
@@ -255,5 +257,9 @@ class SnakePlayer(
         rightKey = right
         downKey = down
         leftKey = left
+    }
+
+    fun setRandomStartPosition() {
+        startPosition = Game.board.getRandomEmptyPoint(headEntity.size) ?: return
     }
 }

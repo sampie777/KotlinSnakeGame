@@ -6,7 +6,6 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import java.awt.Color
 import java.awt.EventQueue
-import java.awt.Point
 import java.util.logging.Logger
 
 @Suppress("UNUSED_PARAMETER")
@@ -21,8 +20,8 @@ fun main(args: Array<String>) {
 
     val player = SnakePlayer(
         name = "Player 1",
-        startPosition = Point(Game.board.size.width - Game.board.gridSize, 0)
     )
+    player.setRandomStartPosition()
     player.setControls(
         up = Config.player1UpKey,
         right = Config.player1RightKey,
@@ -33,8 +32,8 @@ fun main(args: Array<String>) {
     val player2 = SnakePlayer(
         name = "Player 2",
         color = Color(0, 0, 255, 100),
-        startPosition = Point(0, 0)
     )
+    player2.setRandomStartPosition()
     player2.setControls(
         up = Config.player2UpKey,
         right = Config.player2RightKey,
