@@ -2,14 +2,14 @@ package nl.sajansen.kotlinsnakegame.objects.board
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
-import nl.sajansen.kotlinsnakegame.objects.GameObject
+import nl.sajansen.kotlinsnakegame.objects.Entity
 import nl.sajansen.kotlinsnakegame.objects.Sprite
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Box
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
-import nl.sajansen.kotlinsnakegame.objects.props.Box
-import nl.sajansen.kotlinsnakegame.objects.props.Food
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Point
@@ -17,13 +17,13 @@ import java.awt.image.BufferedImage
 import java.util.logging.Logger
 import kotlin.random.Random
 
-class Board : GameObject {
+class Board : Entity {
     private val logger = Logger.getLogger(Board::class.java.name)
 
     var size = Dimension(900, 600)
     var windowSize = Dimension(900, 600)
     var windowPosition = Point(0, 0)
-    var props = arrayListOf<Sprite>()
+    var entities = arrayListOf<Sprite>()
     var gridSize = 32
 
     init {
@@ -31,15 +31,15 @@ class Board : GameObject {
     }
 
     private fun loadBoard1() {
-        props.add(Box(Point(100, 60)))
-        props.add(Box(Point(311, 98)))
+        entities.add(Box(Point(100, 60)))
+        entities.add(Box(Point(311, 98)))
         spawnRandomFood()
     }
 
-    private fun allSprites() = Game.players + props
+    private fun allSprites() = Game.players + entities
 
     override fun reset() {
-        props.clear()
+        entities.clear()
         loadBoard1()
 
         Game.players.forEach {
@@ -99,6 +99,6 @@ class Board : GameObject {
             food.position.y = Random.nextInt(0, maxY) * gridSize + (gridSize - food.size.height) / 2
         } while (getSpritesAt(food).isNotEmpty())
 
-        props.add(food)
+        entities.add(food)
     }
 }

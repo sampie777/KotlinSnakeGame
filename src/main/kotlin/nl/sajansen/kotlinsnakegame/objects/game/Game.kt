@@ -3,7 +3,6 @@ package nl.sajansen.kotlinsnakegame.objects.game
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
-import nl.sajansen.kotlinsnakegame.objects.GameObject
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.visuals.GameOverlay
@@ -12,7 +11,7 @@ import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-object Game : KeyEventListener, GameObject {
+object Game : KeyEventListener {
     private val logger = Logger.getLogger(Game::class.java.name)
 
     var state = GameState()
@@ -76,16 +75,16 @@ object Game : KeyEventListener, GameObject {
         state.runningState = GameRunningState.ENDED
     }
 
-    override fun reset() {
+    fun reset() {
         board.reset()
     }
 
-    override fun step() {
+    fun step() {
         state.time++
         board.step()
     }
 
-    override fun paint(): BufferedImage {
+    fun paint(): BufferedImage {
         val (bufferedImage, g: Graphics2D) = createGraphics(board.windowSize.width, board.windowSize.height)
 
         g.drawImage(board.paint(), null, 0, 0)

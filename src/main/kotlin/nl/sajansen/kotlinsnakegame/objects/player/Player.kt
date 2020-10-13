@@ -7,8 +7,8 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.Sprites
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.game.Game
-import nl.sajansen.kotlinsnakegame.objects.props.Food
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger

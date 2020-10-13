@@ -3,34 +3,29 @@ package nl.sajansen.kotlinsnakegame.objects.player
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
-import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
-import nl.sajansen.kotlinsnakegame.gui.utils.scaleImage
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.Sprite
-import nl.sajansen.kotlinsnakegame.objects.Sprites
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
+import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
+import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
-import nl.sajansen.kotlinsnakegame.objects.props.Food
-import java.awt.Graphics2D
+import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
-import javax.imageio.ImageIO
 
 class SnakePlayer : Player(), KeyEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
-    override var sprite = Sprites.SNAKE_HEAD_1
-    var spriteBody = Sprites.SNAKE_BODY_1
     override var speed = size.width
 
     // Just some empty values, see reset() for the real values
     override var score = 0
     private var updateInterval = 0
     private var nextUpdateTime: Long = 0
-    private var lastPositions = arrayListOf<Point>()
-
-    private fun spriteBodyResource() = this::class.java.classLoader.getResource(spriteBody.path)
+    private var headEntity = SnakeHead()
+    private var bodyEntities = arrayListOf<SnakeBody>()
 
     override fun reset() {
         position = Point(0, 0)
@@ -38,14 +33,23 @@ class SnakePlayer : Player(), KeyEventListener {
         score = 3
         nextUpdateTime = 0
         boostSpeed(false)
-        initLastPositions()
+        initEntities()
     }
 
-    private fun initLastPositions() {
-        logger.info("Resetting snake's last positions")
-        lastPositions.clear()
-        while (lastPositions.size < score) {
-            lastPositions.add(position.clone() as Point)
+    private fun initEntities() {
+        logger.info("Resetting snake's entities")
+        headEntity.destroy()
+        bodyEntities.forEach { it.destroy() }
+
+        // Creating new head
+        headEntity = SnakeHead()
+        headEntity.position = position
+        Game.board.entities.add(headEntity)
+
+        // Creating new body
+        bodyEntities.clear()
+        while (bodyEntities.size < score) {
+            addBodyEntityAt(headEntity.position)
         }
     }
 
@@ -72,14 +76,19 @@ class SnakePlayer : Player(), KeyEventListener {
     }
 
     override fun step() {
+        if (Game.state.runningState != GameRunningState.STARTED) {
+            return
+        }
+
         if (!isItTimeToUpdate()) {
             return
         }
 
         updateBodyPositions()
         moveToNewPosition()
+        updateHeadPosition()
 
-        val spritesAtPosition = Game.board.getSpritesAt(this)
+        val spritesAtPosition = Game.board.getSpritesAt(headEntity).filter { it != this }
         if (checkForCollision(spritesAtPosition)) {
             return
         }
@@ -87,7 +96,7 @@ class SnakePlayer : Player(), KeyEventListener {
         spritesAtPosition.filterIsInstance<Food>()
             .forEach {
                 consume(it)
-                lastPositions.add(0, lastPositions[0])
+                addBodyEntityAt(bodyEntities[0].position, 0)
 
                 Game.board.spawnRandomFood()
             }
@@ -107,58 +116,52 @@ class SnakePlayer : Player(), KeyEventListener {
         }
 
         if (spritesAtPosition.any { it.solid }) {
-            Game.end("Snake burst its head")
+            Game.end("Snake burst its head at $position")
             return true
         }
 
-        if (lastPositions.any { it.x == position.x && it.y == position.y }) {
-            Game.end("Snake burst its head against itself")
+        if (bodyEntities.any { it.position.x == headEntity.position.x && it.position.y == headEntity.position.y }) {
+            Game.end("Snake burst its head against itself at ${headEntity.position}")
             return true
         }
 
         if (Config.snakeCollidesWithWalls && headIsOutOfBoard()) {
-            Game.end("Snake burst its head against the wall")
+            Game.end("Snake burst its head against the wall at ${headEntity.position}")
             return true
         }
         return false
     }
 
     private fun headIsOutOfBoard(): Boolean {
-        return position.x < 0 || position.x + size.width > Game.board.size.width
-                || position.y < 0 || position.y + size.height > Game.board.size.height
+        return headEntity.position.x < 0 || headEntity.position.x + size.width > Game.board.size.width
+                || headEntity.position.y < 0 || headEntity.position.y + size.height > Game.board.size.height
+    }
+
+    private fun updateHeadPosition() {
+        headEntity.position = position
+    }
+
+    private fun addBodyEntityAt(point: Point, index: Int? = null) {
+        val entity = SnakeBody()
+        entity.position = point.clone() as Point
+        Game.board.entities.add(entity)
+
+        if (index == null) {
+            bodyEntities.add(entity)
+        } else {
+            bodyEntities.add(index, entity)
+        }
     }
 
     private fun updateBodyPositions() {
-        lastPositions.removeAt(0)
-        lastPositions.add(position.clone() as Point)
+        val entityToRemove = bodyEntities.first()
+        entityToRemove.destroy()
+        bodyEntities.remove(entityToRemove)
+
+        addBodyEntityAt(headEntity.position)
     }
 
     override fun paint(): BufferedImage {
-        val (bufferedImage, g: Graphics2D) = createGraphics(Game.board.size.width, Game.board.size.height)
-
-        val head = paintSnakeHead()
-        val bodyPart = paintSnakeBodyPart()
-
-        val scaledBodyPart = scaleImage(bodyPart, size.width, size.height)
-        lastPositions.toTypedArray().forEach {
-            g.drawImage(scaledBodyPart, null, it.x, it.y)
-        }
-
-        g.drawImage(scaleImage(head, size.width, size.height), null, position.x, position.y)
-
-        g.dispose()
-        return bufferedImage
-    }
-
-    private fun paintSnakeHead(): BufferedImage {
-        val spriteResource =
-            spriteResource() ?: throw IllegalArgumentException("Sprite resource not found: ${sprite.path}")
-        return ImageIO.read(spriteResource)
-    }
-
-    private fun paintSnakeBodyPart(): BufferedImage {
-        val spriteBodyResource =
-            spriteBodyResource() ?: throw IllegalArgumentException("Sprite resource not found: ${spriteBody.path}")
-        return ImageIO.read(spriteBodyResource)
+        return BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
     }
 }
