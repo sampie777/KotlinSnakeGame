@@ -1,6 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.board
 
 
+import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.Entity
 import nl.sajansen.kotlinsnakegame.objects.Sprite
@@ -26,6 +27,8 @@ class Board {
     var windowPosition = Point(0, 0)
     var entities = arrayListOf<Entity>()
 
+    private var spawnStarAtTime = -1L
+
     init {
         loadBoard1()
     }
@@ -36,9 +39,8 @@ class Board {
             entities.add(Box(randomPoint))
         }
 
-        entities.add(Star(Point(32, 32)))
-
         spawnRandomFood()
+        spawnRandomStar()
     }
 
     private fun spriteEntities() = entities.toTypedArray().filterIsInstance<Sprite>()
@@ -55,6 +57,8 @@ class Board {
     }
 
     fun step() {
+        spawnStarIfNeeded()
+
         entities.toTypedArray().forEach {
             it.step()
         }
@@ -89,7 +93,7 @@ class Board {
     }
 
     fun spawnRandomFood() {
-        val food = Food(Point(0, 0))
+        val food = Food()
 
         val randomPoint = getRandomEmptyPoint(food.size)
         if (randomPoint == null) {
@@ -100,6 +104,19 @@ class Board {
 
         food.position = randomPoint
         entities.add(food)
+    }
+
+    fun spawnStarIfNeeded() {
+        if (spawnStarAtTime < 0 || spawnStarAtTime > Game.state.time) return
+
+        logger.info("Time to spawn a star")
+        Star.spawnAtRandomLocation()
+        spawnStarAtTime = -1
+    }
+
+    fun spawnRandomStar() {
+        spawnStarAtTime = Game.state.time + Random.nextInt(Config.starMinSpawnTime, Config.starMaxSpawnTime) * Config.stepPerSeconds
+        logger.info("Spawn next star at random time: $spawnStarAtTime")
     }
 
     fun getRandomEmptyPoint(size: Dimension): Point? {

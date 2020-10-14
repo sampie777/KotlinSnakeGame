@@ -8,8 +8,10 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
+import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakePart
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import java.awt.Color
@@ -17,10 +19,11 @@ import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 import kotlin.math.max
+import kotlin.random.Random
 
 class SnakePlayer(
     override var name: String = "Player",
-    var color: Color = Color(0, 0, 0, 0),
+    color: Color = Color(0, 0, 0, 0),
     var startPosition: Point? = null
 ) : Player, KeyEventListener, ConfigEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
@@ -35,9 +38,20 @@ class SnakePlayer(
             field = value
             logger.info("Player scores increases to: $value")
         }
+    var color: Color = color
+        get() {
+            if (hasStarEffect()) {
+                return when (Random.nextInt(0, 6)) {
+                    0 -> Color(255, 255, 150, 255)
+                    else -> Color(255, 255, 0, 255)
+                }
+            }
+            return field
+        }
 
     private var direction: Direction = Direction.NONE
     private var speed = Game.board.gridSize
+    private var starWearsOutTime = 0L
 
     // Controls
     private var upKey: Int = Config.player1UpKey
@@ -53,6 +67,7 @@ class SnakePlayer(
         direction = if (Config.snakeOnlyLeftRightControls) Direction.SOUTH else Direction.NONE
         score = 3
         nextUpdateTime = 0
+        starWearsOutTime = 0
         boostSpeed(false)
         initEntities()
     }
@@ -130,7 +145,7 @@ class SnakePlayer(
             return
         }
 
-        if (!isItTimeToUpdate()) {
+        if (!isItTimeToUpdateMovement()) {
             return
         }
 
@@ -142,6 +157,12 @@ class SnakePlayer(
             return
         }
 
+        processFoodAtPosition(spritesAtPosition)
+
+        processStarAtPosition(spritesAtPosition)
+    }
+
+    private fun processFoodAtPosition(spritesAtPosition: List<Sprite>) {
         spritesAtPosition.filterIsInstance<Food>()
             .forEach {
                 consume(it)
@@ -151,7 +172,16 @@ class SnakePlayer(
             }
     }
 
-    private fun isItTimeToUpdate(): Boolean {
+    private fun processStarAtPosition(spritesAtPosition: List<Sprite>) {
+        spritesAtPosition.filterIsInstance<Star>()
+            .forEach {
+                catchStar(it)
+
+                Game.board.spawnRandomStar()
+            }
+    }
+
+    private fun isItTimeToUpdateMovement(): Boolean {
         if (nextUpdateTime > Game.state.time) {
             return false
         }
@@ -202,20 +232,33 @@ class SnakePlayer(
 
         // Handle sprite collisions
 
-        val snakeParts = spritesAtPosition.filter { it is SnakeHead || it is SnakeBody }
+        val snakeParts = spritesAtPosition.filterIsInstance<SnakePart>()
         if (snakeParts.isEmpty()) {
             Game.end("$name burst its head")
             return true
         }
 
+        if (hasStarEffect()) {
+            return processSnakeCollisionsDuringStartEffect(snakeParts)
+        }
+
+        return processSnakeCollisions(snakeParts)
+    }
+
+    private fun processSnakeCollisions(snakeParts: List<SnakePart>): Boolean {
         if (snakeParts.any { it is SnakeBody && it.snakePlayer == this }) {
-            Game.end("Snake ate itself")
+            Game.end("$name ate itself")
             return true
         }
 
         val otherSnakeHead = snakeParts.find { it is SnakeHead }
         if (otherSnakeHead != null) {
-            Game.end("Head to head collision between $name and ${(otherSnakeHead as SnakeHead).snakePlayer.name}")
+            val otherSnake = (otherSnakeHead as SnakeHead).snakePlayer
+            if (otherSnake.hasStarEffect()) {
+                Game.end("$name was eaten alive by ${otherSnake.name}")
+            } else {
+                Game.end("Head to head collision between $name and ${otherSnake.name}")
+            }
             return true
         }
 
@@ -227,6 +270,38 @@ class SnakePlayer(
 
         Game.end("$name collided with someone")
         return true
+    }
+
+    private fun processSnakeCollisionsDuringStartEffect(snakeParts: List<SnakePart>): Boolean {
+        val otherSnakeHead = snakeParts.find { it is SnakeHead }
+        if (otherSnakeHead != null) {
+            val otherSnake = (otherSnakeHead as SnakeHead).snakePlayer
+            if (otherSnake.hasStarEffect()) {
+                Game.end("Big Bang between $name and ${otherSnake.name}!")
+            } else {
+                Game.end("${otherSnake.name} was eaten alive by $name")
+            }
+            return true
+        }
+
+        val otherSnakeBody = snakeParts.find { it is SnakeBody }
+        if (otherSnakeBody != null) {
+            val otherSnake = (otherSnakeBody as SnakeBody).snakePlayer
+            otherSnake.cutOffBodyAt(otherSnakeBody)
+            return true
+        }
+        return false
+    }
+
+    private fun cutOffBodyAt(body: SnakeBody) {
+        val index = bodyEntities.indexOf(body)
+        logger.info("Cutting off snake's body at index $index")
+
+        do {
+            bodyEntities.first().destroy()
+        } while (bodyEntities.removeFirst() != body)
+
+        score -= index + 1
     }
 
     private fun headIsOutOfBoard(): Boolean {
@@ -247,6 +322,10 @@ class SnakePlayer(
     }
 
     private fun updateBodyPositions() {
+        if (bodyEntities.isEmpty()) {
+            return
+        }
+
         val entityToRemove = bodyEntities.first()
         entityToRemove.destroy()
         bodyEntities.remove(entityToRemove)
@@ -259,6 +338,15 @@ class SnakePlayer(
         score += food.points
         food.destroy()
     }
+
+    private fun catchStar(star: Star) {
+        logger.info("Player caught star")
+        star.destroy()
+        starWearsOutTime = Game.state.time + Config.starEffectTime * Config.stepPerSeconds
+        logger.info("Player has been given the star effect until time: $starWearsOutTime")
+    }
+
+    private fun hasStarEffect() = starWearsOutTime > Game.state.time
 
     fun setControls(up: Int, right: Int, down: Int, left: Int) {
         upKey = up

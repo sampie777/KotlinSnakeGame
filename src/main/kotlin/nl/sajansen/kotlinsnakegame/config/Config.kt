@@ -13,12 +13,18 @@ object Config {
     var fontFamily = "Dialog"
 
     // Game
-    var stepInterval: Long = 25
+    var stepPerSeconds: Long = 25
     var playerWarpsThroughWalls = true
 
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
     var snakeStepInterval = 13
     var snakeOnlyLeftRightControls = true
+
+    var starMinSpawnTime = 10   // In seconds
+    var starMaxSpawnTime = 100  // In seconds
+    var starEffectTime = 7   // In seconds
+    var starMinDieTimeout = 5
+    var starMaxDieTimeout = 15
 
     // Controls
     var player1UpKey = KeyEvent.VK_UP

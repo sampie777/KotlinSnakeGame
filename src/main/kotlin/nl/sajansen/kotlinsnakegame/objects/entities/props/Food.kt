@@ -8,7 +8,7 @@ import java.awt.Point
 import java.util.logging.Logger
 
 class Food(
-    override var position: Point
+    override var position: Point = Point(0, 0)
 ) : Sprite() {
     private val logger = Logger.getLogger(Food::class.java.name)
 

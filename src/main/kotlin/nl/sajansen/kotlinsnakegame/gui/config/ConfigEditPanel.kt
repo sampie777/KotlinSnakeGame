@@ -10,6 +10,8 @@ import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
+import kotlin.math.max
+import kotlin.math.min
 
 class ConfigEditPanel : JPanel() {
     private val logger = Logger.getLogger(ConfigEditPanel::class.java.name)
@@ -33,7 +35,7 @@ class ConfigEditPanel : JPanel() {
         )
         formComponents.add(
             NumberFormInput<Long>(
-                "stepInterval",
+                "stepPerSeconds",
                 "Game speed",
                 min = 1,
                 max = null
@@ -43,12 +45,61 @@ class ConfigEditPanel : JPanel() {
         formComponents.add(HeaderFormComponent("Game Play"))
         formComponents.add(BooleanFormInput("playerWarpsThroughWalls", "Warp through walls"))
         formComponents.add(BooleanFormInput("snakeCollidesWithWalls", "Collide with walls"))
-        formComponents.add(BooleanFormInput("snakeOnlyLeftRightControls", "Steer snake with only two directions (not four)"))
+        formComponents.add(
+            BooleanFormInput(
+                "snakeOnlyLeftRightControls",
+                "Steer snake with only two directions (not four)"
+            )
+        )
         formComponents.add(
             NumberFormInput<Int>(
                 "snakeStepInterval",
                 "Snake speed",
                 min = 1,
+                max = Int.MAX_VALUE
+            )
+        )
+        formComponents.add(
+            NumberFormInput<Int>(
+                "starMinSpawnTime",
+                "Star minimum spawn time",
+                min = 0,
+                max = Int.MAX_VALUE,
+                onSave = { max(0, min(it, Config.starMaxSpawnTime - 1)) }
+            )
+        )
+        formComponents.add(
+            NumberFormInput<Int>(
+                "starMaxSpawnTime",
+                "Star maximum spawn time",
+                min = 0,
+                max = Int.MAX_VALUE,
+                onSave = { max(it, Config.starMinSpawnTime + 1) }
+            )
+        )
+        formComponents.add(
+            NumberFormInput<Int>(
+                "starMinDieTimeout",
+                "Star minimum time to live",
+                min = 0,
+                max = Int.MAX_VALUE,
+                onSave = { max(0, min(it, Config.starMaxDieTimeout - 1)) }
+            )
+        )
+        formComponents.add(
+            NumberFormInput<Int>(
+                "starMaxDieTimeout",
+                "Star maximum time to live",
+                min = 0,
+                max = Int.MAX_VALUE,
+                onSave = { max(it, Config.starMinDieTimeout + 1) }
+            )
+        )
+        formComponents.add(
+            NumberFormInput<Int>(
+                "starEffectTime",
+                "Star effect time",
+                min = 0,
                 max = Int.MAX_VALUE
             )
         )

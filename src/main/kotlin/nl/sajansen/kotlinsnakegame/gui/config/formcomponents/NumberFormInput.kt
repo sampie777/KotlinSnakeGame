@@ -15,7 +15,9 @@ class NumberFormInput<T : Number>(
     override val key: String,
     private val labelText: String,
     private val min: T?,
-    private val max: T?
+    private val max: T?,
+    private val onSave: ((newValue: T) -> T)? = null,
+    private val onValidate: ((newValue: T) -> List<String>)? = null
 ) : FormInput {
     private val logger = Logger.getLogger(NumberFormInput::class.java.name)
 
@@ -48,11 +50,17 @@ class NumberFormInput<T : Number>(
             errors.add("Value for '$labelText' is to large")
         }
 
+        if (onValidate != null) {
+            errors.addAll(onValidate.invoke(value()))
+        }
+
         return errors
     }
 
     override fun save() {
-        Config.set(key, value())
+        val value = onSave?.invoke(value()) ?: value()
+
+        Config.set(key, value)
     }
 
     @Suppress("UNCHECKED_CAST")
