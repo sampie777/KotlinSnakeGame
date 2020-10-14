@@ -1,7 +1,8 @@
-package nl.sajansen.kotlinsnakegame.objects
+package nl.sajansen.kotlinsnakegame.objects.entities
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.scaleImage
+import nl.sajansen.kotlinsnakegame.objects.Sprites
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
@@ -10,11 +11,11 @@ import java.net.URL
 import java.util.logging.Logger
 import javax.imageio.ImageIO
 
-abstract class Sprite : Entity {
+abstract class Sprite : CollidableEntity {
     private val logger = Logger.getLogger(Sprite::class.java.name)
 
-    open var position = Point(0, 0)
-    open var size = Dimension(32, 32)
+    override var position = Point(0, 0)
+    override var size = Dimension(32, 32)
     open var sprite = Sprites.UNKNOWN
     open var solid = true
 
@@ -73,5 +74,13 @@ abstract class Sprite : Entity {
         }
         nextUpdateTime = Game.state.time + spriteSpeed
         return true
+    }
+
+    override fun collidedWith(entity: Entity) {
+    }
+
+    override fun destroy() {
+        logger.info("Destroying $this")
+        super.destroy()
     }
 }

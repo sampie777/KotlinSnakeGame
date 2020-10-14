@@ -3,14 +3,17 @@ package nl.sajansen.kotlinsnakegame.objects.board
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
-import nl.sajansen.kotlinsnakegame.objects.Entity
-import nl.sajansen.kotlinsnakegame.objects.Sprite
+import nl.sajansen.kotlinsnakegame.objects.entities.CollidableEntity
+import nl.sajansen.kotlinsnakegame.objects.entities.Entity
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Box
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.isEntityInEntity
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
+import nl.sajansen.kotlinsnakegame.objects.player.Player
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Point
@@ -48,20 +51,39 @@ class Board {
     fun reset() {
         entities.clear()
 
-        entities.addAll(Game.players)
         loadBoard1()
 
-        entities.toTypedArray().forEach {
+        Game.players.toTypedArray().forEach {
             it.reset()
         }
+
+        entities.toTypedArray()
+            .filter { it !is Player }   // Player sprites already had a reset() call
+            .forEach {
+                it.reset()
+            }
     }
 
     fun step() {
         spawnStarIfNeeded()
 
-        entities.toTypedArray().forEach {
-            it.step()
-        }
+        // Step all
+        Game.players.toTypedArray().forEach { it.step() }
+        entities.toTypedArray()
+            .filter { it !is Player }   // Player sprites already had a step() call
+            .forEach { it.step() }
+
+        // Check for collisions
+        checkCollisions(entities.toTypedArray())
+    }
+
+    private fun checkCollisions(entities: Array<Entity>) {
+        entities.filterIsInstance<CollidableEntity>()
+            .forEach { entity ->
+                getEntitiesAt(entity as Sprite).forEach {
+                    entity.collidedWith(it)
+                }
+            }
     }
 
     fun paint(): BufferedImage {
@@ -79,6 +101,11 @@ class Board {
         }
     }
 
+    fun getEntitiesAt(entity: Entity): List<Entity> {
+        return entities.filter { it != entity }
+            .filter { isEntityInEntity(entity, it) }
+    }
+
     fun getSpritesAt(sprite: Sprite): List<Sprite> {
         return spriteEntities().filter { it != sprite }
             .filter { isSpriteInSprite(sprite, it) }
@@ -93,6 +120,7 @@ class Board {
     }
 
     fun spawnRandomFood() {
+        logger.info("Time to spawn some food")
         val food = Food()
 
         val randomPoint = getRandomEmptyPoint(food.size)
@@ -115,7 +143,8 @@ class Board {
     }
 
     fun spawnRandomStar() {
-        spawnStarAtTime = Game.state.time + Random.nextInt(Config.starMinSpawnTime, Config.starMaxSpawnTime) * Config.stepPerSeconds
+        spawnStarAtTime =
+            Game.state.time + Random.nextInt(Config.starMinSpawnTime, Config.starMaxSpawnTime) * Config.stepPerSeconds
         logger.info("Spawn next star at random time: $spawnStarAtTime")
     }
 

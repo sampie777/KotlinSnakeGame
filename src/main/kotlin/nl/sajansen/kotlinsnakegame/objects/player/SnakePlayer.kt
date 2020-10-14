@@ -6,18 +6,19 @@ import nl.sajansen.kotlinsnakegame.events.ConfigEventListener
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
-import nl.sajansen.kotlinsnakegame.objects.Sprite
+import nl.sajansen.kotlinsnakegame.objects.entities.Entity
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
-import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakePart
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import java.awt.Color
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -135,11 +136,6 @@ class SnakePlayer(
         }
     }
 
-    override fun destroy() {
-        logger.warning("Cannot destroy snake player object")
-        Game.end("Player is destroyed")
-    }
-
     override fun step() {
         if (Game.state.runningState != GameRunningState.STARTED) {
             return
@@ -151,34 +147,6 @@ class SnakePlayer(
 
         updateBodyPositions()
         moveToNewPosition()
-
-        val spritesAtPosition = Game.board.getSpritesAt(headEntity)
-        if (checkForCollision(spritesAtPosition)) {
-            return
-        }
-
-        processFoodAtPosition(spritesAtPosition)
-
-        processStarAtPosition(spritesAtPosition)
-    }
-
-    private fun processFoodAtPosition(spritesAtPosition: List<Sprite>) {
-        spritesAtPosition.filterIsInstance<Food>()
-            .forEach {
-                consume(it)
-                addBodyEntityAt(bodyEntities[0].position, 0)
-
-                Game.board.spawnRandomFood()
-            }
-    }
-
-    private fun processStarAtPosition(spritesAtPosition: List<Sprite>) {
-        spritesAtPosition.filterIsInstance<Star>()
-            .forEach {
-                catchStar(it)
-
-                Game.board.spawnRandomStar()
-            }
     }
 
     private fun isItTimeToUpdateMovement(): Boolean {
@@ -200,7 +168,10 @@ class SnakePlayer(
         }
 
         if (!Config.playerWarpsThroughWalls) {
-            return
+            if (Config.snakeCollidesWithWalls && headIsOutOfBoard()) {
+                Game.end("$name burst its head against the wall")
+                return
+            }
         }
 
         if (headEntity.position.x + headEntity.size.width / 2 < 0) {
@@ -214,83 +185,6 @@ class SnakePlayer(
         } else if (headEntity.position.y + headEntity.size.height / 2 > Game.board.size.height) {
             headEntity.position.y = 0
         }
-    }
-
-    private fun checkForCollision(spritesAtPosition: List<Sprite>): Boolean {
-        if (direction == Direction.NONE) {
-            return false
-        }
-
-        if (Config.snakeCollidesWithWalls && headIsOutOfBoard()) {
-            Game.end("$name burst its head against the wall")
-            return true
-        }
-
-        if (!spritesAtPosition.any { it.solid }) {
-            return false
-        }
-
-        // Handle sprite collisions
-
-        val snakeParts = spritesAtPosition.filterIsInstance<SnakePart>()
-        if (snakeParts.isEmpty()) {
-            Game.end("$name burst its head")
-            return true
-        }
-
-        if (hasStarEffect()) {
-            return processSnakeCollisionsDuringStartEffect(snakeParts)
-        }
-
-        return processSnakeCollisions(snakeParts)
-    }
-
-    private fun processSnakeCollisions(snakeParts: List<SnakePart>): Boolean {
-        if (snakeParts.any { it is SnakeBody && it.snakePlayer == this }) {
-            Game.end("$name ate itself")
-            return true
-        }
-
-        val otherSnakeHead = snakeParts.find { it is SnakeHead }
-        if (otherSnakeHead != null) {
-            val otherSnake = (otherSnakeHead as SnakeHead).snakePlayer
-            if (otherSnake.hasStarEffect()) {
-                Game.end("$name was eaten alive by ${otherSnake.name}")
-            } else {
-                Game.end("Head to head collision between $name and ${otherSnake.name}")
-            }
-            return true
-        }
-
-        val otherSnakeBody = snakeParts.find { it is SnakeBody }
-        if (otherSnakeBody != null) {
-            Game.end("$name ran into ${(otherSnakeBody as SnakeBody).snakePlayer.name}")
-            return true
-        }
-
-        Game.end("$name collided with someone")
-        return true
-    }
-
-    private fun processSnakeCollisionsDuringStartEffect(snakeParts: List<SnakePart>): Boolean {
-        val otherSnakeHead = snakeParts.find { it is SnakeHead }
-        if (otherSnakeHead != null) {
-            val otherSnake = (otherSnakeHead as SnakeHead).snakePlayer
-            if (otherSnake.hasStarEffect()) {
-                Game.end("Big Bang between $name and ${otherSnake.name}!")
-            } else {
-                Game.end("${otherSnake.name} was eaten alive by $name")
-            }
-            return true
-        }
-
-        val otherSnakeBody = snakeParts.find { it is SnakeBody }
-        if (otherSnakeBody != null) {
-            val otherSnake = (otherSnakeBody as SnakeBody).snakePlayer
-            otherSnake.cutOffBodyAt(otherSnakeBody)
-            return true
-        }
-        return false
     }
 
     private fun cutOffBodyAt(body: SnakeBody) {
@@ -307,6 +201,69 @@ class SnakePlayer(
     private fun headIsOutOfBoard(): Boolean {
         return headEntity.position.x < 0 || headEntity.position.x + headEntity.size.width > Game.board.size.width
                 || headEntity.position.y < 0 || headEntity.position.y + headEntity.size.height > Game.board.size.height
+    }
+
+    fun headCollidedWith(entity: Entity) {
+        when (entity) {
+            is Food -> return consume(entity)
+            is Star -> return catchStar(entity)
+            is SnakeHead -> return processCollisionWithSnakeHead(entity)
+            is SnakeBody -> return processCollisionWithSnakeBody(entity)
+            !is Sprite -> return
+            else -> {
+                if (!entity.solid) {
+                    return
+                }
+
+                logger.info("$this collided with $entity")
+                Game.end("$name burst its head")
+            }
+        }
+    }
+
+    private fun processCollisionWithSnakeHead(snakeHead: SnakeHead) {
+        val otherSnake = snakeHead.snakePlayer
+
+        if (hasStarEffect()) {
+            if (otherSnake.hasStarEffect()) {
+                return Game.end("Big Bang between $name and ${otherSnake.name}!")
+            }
+
+            return Game.end("${otherSnake.name} was eaten alive by $name")
+        }
+
+        if (otherSnake.hasStarEffect()) {
+            return Game.end("$name was eaten alive by ${otherSnake.name}")
+        }
+
+        Game.end("Head to head collision between $name and ${otherSnake.name}")
+    }
+
+    private fun processCollisionWithSnakeBody(snakeBody: SnakeBody) {
+        val otherSnake = snakeBody.snakePlayer
+
+        if (otherSnake == this) {
+            if (hasStarEffect()) {
+                return
+            }
+            return Game.end("$name ate itself")
+        }
+
+        if (hasStarEffect()) {
+            return otherSnake.cutOffBodyAt(snakeBody)
+        }
+
+        if (isPossibleHeadToHeadCollisionWith(otherSnake, snakeBody)) {
+            return Game.end("${otherSnake.name} was eaten alive by $name")
+        }
+
+        Game.end("$name ran into ${otherSnake.name}")
+    }
+
+    private fun isPossibleHeadToHeadCollisionWith(otherSnake: SnakePlayer, snakeBody: SnakeBody): Boolean {
+        return otherSnake.bodyEntities.isNotEmpty()
+                && otherSnake.bodyEntities.indexOf(snakeBody) == otherSnake.bodyEntities.size - 1
+                && abs(otherSnake.direction.value - direction.value) == 4
     }
 
     private fun addBodyEntityAt(point: Point, index: Int? = null) {
@@ -337,6 +294,8 @@ class SnakePlayer(
         logger.info("Player eats food")
         score += food.points
         food.destroy()
+
+        addBodyEntityAt(bodyEntities[0].position, 0)
     }
 
     private fun catchStar(star: Star) {

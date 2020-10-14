@@ -2,8 +2,8 @@ package nl.sajansen.kotlinsnakegame.objects.entities.props
 
 
 import nl.sajansen.kotlinsnakegame.config.Config
-import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.Sprites
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
@@ -49,6 +49,11 @@ class Star(
         }
     }
 
+    override fun destroy() {
+        super.destroy()
+        Game.board.spawnRandomStar()
+    }
+
     fun ignite() {
         logger.info("Igniting star")
         dieAtTime = Game.state.time + Random.nextInt(Config.starMinDieTimeout, Config.starMaxDieTimeout) * Config.stepPerSeconds
@@ -58,6 +63,5 @@ class Star(
     fun die() {
         logger.info("Star self destruction")
         destroy()
-        Game.board.spawnRandomStar()
     }
 }

@@ -18,6 +18,7 @@ fun main(args: Array<String>) {
         MainFrame.createAndShow()
     }
 
+//    val player = HumanPlayer()
     val player = SnakePlayer(
         name = "Player 1",
     )

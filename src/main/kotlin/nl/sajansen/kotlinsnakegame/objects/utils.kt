@@ -1,5 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects
 
+import nl.sajansen.kotlinsnakegame.objects.entities.Entity
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Dimension
@@ -23,6 +25,13 @@ fun isSpriteInSprite(sprite1: Sprite, sprite2: Sprite): Boolean {
             && sprite1.position.x < sprite2.position.x + sprite2.size.width
             && sprite1.position.y + sprite1.size.height > sprite2.position.y
             && sprite1.position.y < sprite2.position.y + sprite2.size.height
+}
+
+fun isEntityInEntity(entity1: Entity, entity2: Entity): Boolean {
+    return entity1.position.x + entity1.size.width > entity2.position.x
+            && entity1.position.x < entity2.position.x + entity2.size.width
+            && entity1.position.y + entity1.size.height > entity2.position.y
+            && entity1.position.y < entity2.position.y + entity2.size.height
 }
 
 fun colorizeImage(image: BufferedImage, color: Color): BufferedImage {

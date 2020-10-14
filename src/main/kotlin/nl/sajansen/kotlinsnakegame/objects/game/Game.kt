@@ -79,6 +79,7 @@ object Game : KeyEventListener {
         logger.info("Game ended: $reason")
         deathMessage = reason
         state.runningState = GameRunningState.ENDED
+        GameStepTimer.stop()
     }
 
     fun reset() {

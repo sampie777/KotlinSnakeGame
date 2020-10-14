@@ -20,8 +20,8 @@ object Config {
     var snakeStepInterval = 13
     var snakeOnlyLeftRightControls = true
 
-    var starMinSpawnTime = 10   // In seconds
-    var starMaxSpawnTime = 100  // In seconds
+    var starMinSpawnTime = 1   // In seconds
+    var starMaxSpawnTime = 10  // In seconds
     var starEffectTime = 7   // In seconds
     var starMinDieTimeout = 5
     var starMaxDieTimeout = 15
@@ -31,11 +31,13 @@ object Config {
     var player1RightKey = KeyEvent.VK_RIGHT
     var player1DownKey = KeyEvent.VK_DOWN
     var player1LeftKey = KeyEvent.VK_LEFT
-    var snakeBoostKey = KeyEvent.VK_SPACE
     var player2UpKey = KeyEvent.VK_W
     var player2RightKey = KeyEvent.VK_D
     var player2DownKey = KeyEvent.VK_S
     var player2LeftKey = KeyEvent.VK_A
+
+    var playerPushFood = KeyEvent.VK_CONTROL
+    var snakeBoostKey = KeyEvent.VK_SPACE
 
     // String
     var pressKeyToStartMessage = "Press key to start".toUpperCase()

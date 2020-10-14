@@ -1,8 +1,9 @@
 package nl.sajansen.kotlinsnakegame.objects.player
 
-import nl.sajansen.kotlinsnakegame.objects.Entity
-
-interface Player : Entity {
+interface Player {
     var name: String
     var score: Int
+
+    fun reset()
+    fun step()
 }

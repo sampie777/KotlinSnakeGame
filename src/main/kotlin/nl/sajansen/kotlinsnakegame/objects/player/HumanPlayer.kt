@@ -5,15 +5,17 @@ import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
-import nl.sajansen.kotlinsnakegame.objects.Sprite
-import nl.sajansen.kotlinsnakegame.objects.Sprites
+import nl.sajansen.kotlinsnakegame.objects.entities.Entity
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
+import nl.sajansen.kotlinsnakegame.objects.entities.other.HumanProfile
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 
-class HumanPlayer : Player, Sprite(), KeyEventListener {
+class HumanPlayer : Player, HumanProfile(), KeyEventListener {
     private val logger = Logger.getLogger(HumanPlayer::class.java.name)
 
     var direction: Direction = Direction.NONE
@@ -25,8 +27,8 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
             logger.info("Player scores increases to: $value")
         }
 
-    override var sprite = Sprites.PLAYER_FACE_1
-    override var solid = false
+    private var previousPosition = Point(0, 0)
+    private var pushFood = false
 
     init {
         EventHub.register(this)
@@ -35,6 +37,8 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
     override fun reset() {
         position = Point(0, 0)
         score = 0
+        Game.board.entities.remove(this)
+        Game.board.entities.add(this)
     }
 
     override fun keyPressed(e: KeyEvent) {
@@ -43,6 +47,7 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
             Config.player1RightKey -> direction = Direction.EAST
             Config.player1DownKey -> direction = Direction.SOUTH
             Config.player1LeftKey -> direction = Direction.WEST
+            Config.playerPushFood -> pushFood = true
         }
     }
 
@@ -55,6 +60,8 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
             direction = Direction.NONE
         } else if (e.keyCode == Config.player1LeftKey && direction == Direction.WEST) {
             direction = Direction.NONE
+        } else if (e.keyCode == Config.playerPushFood) {
+            pushFood = false
         }
     }
 
@@ -64,21 +71,9 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
     }
 
     override fun step() {
-        val oldPosition = position.clone() as Point
+        previousPosition = position.clone() as Point
 
         moveToNewPosition()
-
-        val spritesAtPosition = Game.board.getSpritesAt(this)
-
-        if (spritesAtPosition.any { it.solid }) {
-            position = oldPosition
-            return
-        }
-
-        spritesAtPosition.filterIsInstance<Food>()
-            .forEach {
-                consume(it)
-            }
     }
 
     private fun moveToNewPosition() {
@@ -96,15 +91,53 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
         }
 
         if (position.x + size.width / 2 < 0) {
-            position.x = Game.board.size.width - size.width
+            position.x = Game.board.size.width - size.width / 2
         } else if (position.x + size.width / 2 > Game.board.size.width) {
-            position.x = 0
+            position.x = -size.width / 2
         }
 
         if (position.y + size.height / 2 < 0) {
-            position.y = Game.board.size.height - size.height
+            position.y = Game.board.size.height - size.height / 2
         } else if (position.y + size.height / 2 > Game.board.size.height) {
-            position.y = 0
+            position.y = -size.height / 2
+        }
+    }
+
+    override fun collidedWith(entity: Entity) {
+        when (entity) {
+            is Food -> return handleFood(entity)
+            is Star -> return moveStar(entity)
+            !is Sprite -> return
+            else -> {
+                if (!entity.solid) {
+                    return
+                }
+
+                logger.info("$this collided with $entity")
+                position = previousPosition.clone() as Point
+            }
+        }
+    }
+
+    private fun handleFood(food: Food) {
+        if (!pushFood) {
+            return consume(food)
+        }
+        pushEntity(food)
+    }
+
+    private fun moveStar(star: Star) {
+        pushEntity(star)
+    }
+
+    private fun pushEntity(entity: Entity) {
+        when (direction) {
+            Direction.NORTH -> entity.position.y -= speed
+            Direction.EAST -> entity.position.x += speed
+            Direction.SOUTH -> entity.position.y += speed
+            Direction.WEST -> entity.position.x -= speed
+            else -> {
+            }
         }
     }
 

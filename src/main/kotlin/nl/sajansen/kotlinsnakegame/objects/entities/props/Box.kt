@@ -1,8 +1,8 @@
 package nl.sajansen.kotlinsnakegame.objects.entities.props
 
 
-import nl.sajansen.kotlinsnakegame.objects.Sprite
 import nl.sajansen.kotlinsnakegame.objects.Sprites
+import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import java.awt.Point
 import java.util.logging.Logger
 
