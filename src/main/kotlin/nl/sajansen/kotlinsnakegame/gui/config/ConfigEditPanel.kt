@@ -43,6 +43,7 @@ class ConfigEditPanel : JPanel() {
         formComponents.add(HeaderFormComponent("Game Play"))
         formComponents.add(BooleanFormInput("playerWarpsThroughWalls", "Warp through walls"))
         formComponents.add(BooleanFormInput("snakeCollidesWithWalls", "Collide with walls"))
+        formComponents.add(BooleanFormInput("snakeOnlyLeftRightControls", "Steer snake with only two directions (not four)"))
         formComponents.add(
             NumberFormInput<Int>(
                 "snakeStepInterval",

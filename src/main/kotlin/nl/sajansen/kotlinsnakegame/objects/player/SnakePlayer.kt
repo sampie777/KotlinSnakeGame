@@ -270,4 +270,8 @@ class SnakePlayer(
     fun setRandomStartPosition() {
         startPosition = Game.board.getRandomEmptyPoint(headEntity.size) ?: return
     }
+
+    override fun toString(): String {
+        return "SnakePlayer(name=$name, color=$color, score=$score)"
+    }
 }

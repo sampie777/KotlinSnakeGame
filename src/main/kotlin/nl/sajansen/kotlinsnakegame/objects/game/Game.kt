@@ -46,20 +46,28 @@ object Game : KeyEventListener {
         }
 
         if (e.keyCode == KeyEvent.VK_PAUSE) {
+            togglePause()
+        }
+    }
+
+    fun togglePause() {
+        if (state.runningState == GameRunningState.PAUSED) {
+            unpause()
+        } else if (state.runningState == GameRunningState.STARTED) {
             pause()
         }
     }
 
     fun pause() {
-        if (state.runningState == GameRunningState.PAUSED) {
-            logger.info("Unpausing game")
-            GameStepTimer.restart()
-            state.runningState = GameRunningState.STARTED
-        } else if (state.runningState == GameRunningState.STARTED) {
-            logger.info("Pausing game")
-            GameStepTimer.stop()
-            state.runningState = GameRunningState.PAUSED
-        }
+        logger.info("Pausing game")
+        GameStepTimer.stop()
+        state.runningState = GameRunningState.PAUSED
+    }
+
+    fun unpause() {
+        logger.info("Unpausing game")
+        GameStepTimer.restart()
+        state.runningState = GameRunningState.STARTED
     }
 
     fun addPlayer(player: Player): Player {

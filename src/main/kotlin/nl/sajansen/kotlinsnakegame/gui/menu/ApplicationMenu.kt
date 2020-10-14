@@ -36,7 +36,7 @@ class ApplicationMenu : JMenu("Application") {
         quitItem.mnemonic = KeyEvent.VK_Q
         quitItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK)
 
-        pauseItem.addActionListener { Game.pause() }
+        pauseItem.addActionListener { Game.togglePause() }
         restartItem.addActionListener { Game.restart() }
         settingsItem.addActionListener { ConfigFrame(getMainFrameComponent(this)) }
         quitItem.addActionListener { exitApplication() }

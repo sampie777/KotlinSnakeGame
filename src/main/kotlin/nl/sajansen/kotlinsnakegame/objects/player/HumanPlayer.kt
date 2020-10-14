@@ -113,4 +113,8 @@ class HumanPlayer : Player, Sprite(), KeyEventListener {
         score += food.points
         food.destroy()
     }
+
+    override fun toString(): String {
+        return "HumanPlayer(name=$name, score=$score)"
+    }
 }

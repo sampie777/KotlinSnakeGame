@@ -17,7 +17,7 @@ object Config {
     var playerWarpsThroughWalls = true
 
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
-    var snakeStepInterval = 15
+    var snakeStepInterval = 13
     var snakeOnlyLeftRightControls = true
 
     // Controls
