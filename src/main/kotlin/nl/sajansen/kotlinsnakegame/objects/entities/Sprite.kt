@@ -80,7 +80,7 @@ abstract class Sprite : CollidableEntity {
     }
 
     override fun destroy() {
-        logger.info("Destroying $this")
+        logger.fine("Destroying $this")
         super.destroy()
     }
 }

@@ -38,6 +38,16 @@ object GameOverlay {
     }
 
     private fun paintScoreOverlay(): BufferedImage {
+        if (Game.players.size == 1) {
+            return paintScoreOverlayForOnePlayer()
+        } else if (Game.players.size == 2) {
+            return paintScoreOverlayForTwoPlayers()
+        }
+
+        return BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+    }
+
+    private fun paintScoreOverlayForOnePlayer(): BufferedImage {
         val (bufferedImage, g: Graphics2D) = createGraphics(200, 35)
 
         // Draw outline
@@ -60,6 +70,44 @@ object GameOverlay {
         val textHeight = g.fontMetrics.height
 
         g.drawString(message, (bufferedImage.width - textWidth) / 2, textHeight)
+
+        g.dispose()
+        return bufferedImage
+    }
+
+    private fun paintScoreOverlayForTwoPlayers(): BufferedImage {
+        val (bufferedImage, g: Graphics2D) = createGraphics(Game.board.windowSize.width, 35)
+        val polygonWidth = 150
+
+        // Draw outline
+        val outline1 = Polygon()
+        outline1.addPoint(-3, -3)
+        outline1.addPoint(-3, bufferedImage.height)
+        outline1.addPoint(polygonWidth - 20, bufferedImage.height)
+        outline1.addPoint(polygonWidth, -3)
+
+        val outline2 = Polygon()
+        outline2.addPoint(bufferedImage.width + 3, -3)
+        outline2.addPoint(bufferedImage.width + 3, bufferedImage.height)
+        outline2.addPoint(bufferedImage.width - polygonWidth + 20, bufferedImage.height)
+        outline2.addPoint(bufferedImage.width - polygonWidth, -3)
+
+        g.color = Color.GRAY
+        g.stroke = BasicStroke(3F)
+        g.drawPolygon(outline1)
+        g.drawPolygon(outline2)
+
+        // Draw score text
+        g.font = Font("Dialog", Font.BOLD, 20)
+        g.color = Color.WHITE
+
+        val message1 = Game.players[0].score.toString()
+        val textWidth1 = g.fontMetrics.stringWidth(message1)
+        g.drawString(message1, (polygonWidth - textWidth1) / 2, g.fontMetrics.height)
+
+        val message2 = Game.players[1].score.toString()
+        val textWidth2 = g.fontMetrics.stringWidth(message2)
+        g.drawString(message2, bufferedImage.width - (polygonWidth- textWidth2) / 2, g.fontMetrics.height)
 
         g.dispose()
         return bufferedImage

@@ -9,7 +9,7 @@ object Config {
     private val logger = Logger.getLogger(Config.toString())
 
     // GUI
-    var paintFPS: Long = 25
+    var maxFps: Long = 25
     var fontFamily = "Dialog"
 
     // Game
@@ -19,6 +19,7 @@ object Config {
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
     var snakeStepInterval = 13
     var snakeOnlyLeftRightControls = true
+    var snakeEatsHumanPlayer = true
 
     var starMinSpawnTime = 1   // In seconds
     var starMaxSpawnTime = 10  // In seconds

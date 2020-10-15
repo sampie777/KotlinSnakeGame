@@ -27,8 +27,8 @@ class ConfigEditPanel : JPanel() {
         formComponents.add(HeaderFormComponent("General"))
         formComponents.add(
             NumberFormInput<Long>(
-                "paintFPS",
-                "FPS",
+                "maxFps",
+                "Maximum FPS",
                 min = 1,
                 max = null
             )
@@ -36,7 +36,7 @@ class ConfigEditPanel : JPanel() {
         formComponents.add(
             NumberFormInput<Long>(
                 "stepPerSeconds",
-                "Game speed",
+                "Game speed (updates/second)",
                 min = 1,
                 max = null
             )
@@ -44,6 +44,7 @@ class ConfigEditPanel : JPanel() {
 
         formComponents.add(HeaderFormComponent("Game Play"))
         formComponents.add(BooleanFormInput("playerWarpsThroughWalls", "Warp through walls"))
+        formComponents.add(BooleanFormInput("snakeEatsHumanPlayer", "Snake can eat Humans"))
         formComponents.add(BooleanFormInput("snakeCollidesWithWalls", "Collide with walls"))
         formComponents.add(
             BooleanFormInput(

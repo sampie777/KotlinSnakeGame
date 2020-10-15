@@ -11,6 +11,7 @@ import java.awt.Graphics2D
 import java.util.logging.Logger
 import javax.swing.JPanel
 import javax.swing.Timer
+import kotlin.math.min
 
 class MainFramePanel : JPanel() {
     private val logger = Logger.getLogger(MainFramePanel::class.java.name)
@@ -23,8 +24,11 @@ class MainFramePanel : JPanel() {
     init {
         initGui()
 
-        logger.info("Scheduling repaint timer every ${1000 / Config.paintFPS} milliseconds")
-        screenUpdateTimer = Timer((1000 / Config.paintFPS).toInt()) {
+        // Make sure we don't ask more than useful of the painting cycle
+        val fps = min(Config.maxFps, Config.stepPerSeconds)
+
+        logger.info("Scheduling repaint timer every ${1000 / fps} milliseconds")
+        screenUpdateTimer = Timer((1000 / fps).toInt()) {
             screenUpdateTimerStep()
         }
         screenUpdateTimer.start()

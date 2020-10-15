@@ -209,6 +209,7 @@ class SnakePlayer(
             is Star -> return catchStar(entity)
             is SnakeHead -> return processCollisionWithSnakeHead(entity)
             is SnakeBody -> return processCollisionWithSnakeBody(entity)
+            is HumanPlayer -> return processCollisionWithHumanPlayer(entity)
             !is Sprite -> return
             else -> {
                 if (!entity.solid) {
@@ -219,6 +220,14 @@ class SnakePlayer(
                 Game.end("$name burst its head")
             }
         }
+    }
+
+    private fun processCollisionWithHumanPlayer(player: HumanPlayer) {
+        if (!Config.snakeEatsHumanPlayer) {
+            return
+        }
+
+        Game.end("$name ate ${player.name} alive")
     }
 
     private fun processCollisionWithSnakeHead(snakeHead: SnakeHead) {
@@ -246,6 +255,11 @@ class SnakePlayer(
             if (hasStarEffect()) {
                 return
             }
+            if (bodyEntities.size == 1 && bodyEntities.last() == snakeBody) {
+                logger.info("It is impossible for $name to run into its body of length 1")
+                return
+            }
+
             return Game.end("$name ate itself")
         }
 
@@ -295,7 +309,11 @@ class SnakePlayer(
         score += food.points
         food.destroy()
 
-        addBodyEntityAt(bodyEntities[0].position, 0)
+        if (bodyEntities.size > 0) {
+            addBodyEntityAt(bodyEntities[0].position, 0)
+        } else {
+            addBodyEntityAt(headEntity.position, 0)
+        }
     }
 
     private fun catchStar(star: Star) {

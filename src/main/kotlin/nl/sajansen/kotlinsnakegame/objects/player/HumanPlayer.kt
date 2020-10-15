@@ -15,12 +15,14 @@ import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
 
-class HumanPlayer : Player, HumanProfile(), KeyEventListener {
+class HumanPlayer(
+    override var name: String = "Player",
+    var startPosition: Point? = null
+) : Player, HumanProfile(), KeyEventListener {
     private val logger = Logger.getLogger(HumanPlayer::class.java.name)
 
     var direction: Direction = Direction.NONE
     var speed = 5
-    override var name: String = ""
     override var score = 0
         set(value) {
             field = value
@@ -30,35 +32,54 @@ class HumanPlayer : Player, HumanProfile(), KeyEventListener {
     private var previousPosition = Point(0, 0)
     private var pushFood = false
 
+    // Controls
+    private var upKey: Int = Config.player1UpKey
+    private var rightKey: Int = Config.player1RightKey
+    private var downKey: Int = Config.player1DownKey
+    private var leftKey: Int = Config.player1LeftKey
+
     init {
         EventHub.register(this)
     }
 
     override fun reset() {
-        position = Point(0, 0)
+        setRandomStartPosition()
+
+        position = startPosition?.clone() as Point? ?: Point(0, 0)
         score = 0
         Game.board.entities.remove(this)
         Game.board.entities.add(this)
     }
 
+    fun setControls(up: Int, right: Int, down: Int, left: Int) {
+        upKey = up
+        rightKey = right
+        downKey = down
+        leftKey = left
+    }
+
+    fun setRandomStartPosition() {
+        startPosition = Game.board.getRandomEmptyPoint(size) ?: return
+    }
+
     override fun keyPressed(e: KeyEvent) {
         when (e.keyCode) {
-            Config.player1UpKey -> direction = Direction.NORTH
-            Config.player1RightKey -> direction = Direction.EAST
-            Config.player1DownKey -> direction = Direction.SOUTH
-            Config.player1LeftKey -> direction = Direction.WEST
+            upKey -> direction = Direction.NORTH
+            rightKey -> direction = Direction.EAST
+            downKey -> direction = Direction.SOUTH
+            leftKey -> direction = Direction.WEST
             Config.playerPushFood -> pushFood = true
         }
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (e.keyCode == Config.player1UpKey && direction == Direction.NORTH) {
+        if (e.keyCode == upKey && direction == Direction.NORTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.player1RightKey && direction == Direction.EAST) {
+        } else if (e.keyCode == rightKey && direction == Direction.EAST) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.player1DownKey && direction == Direction.SOUTH) {
+        } else if (e.keyCode == downKey && direction == Direction.SOUTH) {
             direction = Direction.NONE
-        } else if (e.keyCode == Config.player1LeftKey && direction == Direction.WEST) {
+        } else if (e.keyCode == leftKey && direction == Direction.WEST) {
             direction = Direction.NONE
         } else if (e.keyCode == Config.playerPushFood) {
             pushFood = false
