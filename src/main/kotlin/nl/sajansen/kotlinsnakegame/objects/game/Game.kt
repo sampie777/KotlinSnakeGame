@@ -5,6 +5,8 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.player.Player
+import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
+import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import nl.sajansen.kotlinsnakegame.objects.visuals.GameOverlay
 import java.awt.Graphics2D
 import java.awt.event.KeyEvent
@@ -75,10 +77,12 @@ object Game : KeyEventListener {
         return player
     }
 
-    fun end(reason: String) {
+    fun end(reason: String, sound: Sounds = Sounds.GAME_END) {
         logger.info("Game ended: $reason")
         deathMessage = reason
         state.runningState = GameRunningState.ENDED
+        SoundPlayer.play(sound)
+
         GameStepTimer.stop()
     }
 

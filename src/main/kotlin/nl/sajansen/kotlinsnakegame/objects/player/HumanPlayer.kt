@@ -11,6 +11,8 @@ import nl.sajansen.kotlinsnakegame.objects.entities.other.Gnome
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
+import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
@@ -168,6 +170,7 @@ class HumanPlayer(
         logger.info("Player eats food")
         score += food.points
         food.destroy()
+        SoundPlayer.play(Sounds.EAT_FOOD)
     }
 
     override fun toString(): String {

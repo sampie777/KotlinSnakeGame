@@ -47,10 +47,21 @@
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
 
+        <!-- Only apply filtering to application.properties -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
             </resource>
         </resources>
 
@@ -116,7 +127,9 @@
                 <version>3.2.0</version>
                 <configuration>
                     <archive>
-                        <manifestFile>${project.build.sourceDirectory}/nl/sajansen/kotlinsnakegame/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestFile>
+                            ${project.build.sourceDirectory}/nl/sajansen/kotlinsnakegame/META-INF/MANIFEST.MF
+                        </manifestFile>
                     </archive>
                 </configuration>
             </plugin>
@@ -160,7 +173,7 @@
                             <stayAlive>false</stayAlive>
                             <restartOnCrash>false</restartOnCrash>
                             <manifest/>
-<!--                            <icon>src/main/resources/icon.ico</icon>-->
+                            <!--                            <icon>src/main/resources/icon.ico</icon>-->
                             <jre>
                                 <path/>
                                 <bundledJre64Bit>false</bundledJre64Bit>

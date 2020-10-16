@@ -14,6 +14,8 @@ import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
+import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
+import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Color
 import java.awt.Point
 import java.awt.event.KeyEvent
@@ -227,7 +229,7 @@ class SnakePlayer(
             return
         }
 
-        Game.end("$name ate ${player.name} alive")
+        Game.end("$name ate ${player.name} alive", Sounds.SNAKE_EAT_GNOME)
     }
 
     private fun processCollisionWithSnakeHead(snakeHead: SnakeHead) {
@@ -308,6 +310,7 @@ class SnakePlayer(
         logger.info("Player eats food")
         score += food.points
         food.destroy()
+        SoundPlayer.play(Sounds.EAT_FOOD)
 
         if (bodyEntities.size > 0) {
             addBodyEntityAt(bodyEntities[0].position, 0)
