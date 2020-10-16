@@ -14,6 +14,7 @@ class SnakeBody(override val snakePlayer: SnakePlayer) : SnakePart, Sprite() {
     override var sprite = Sprites.SNAKE_BODY_1
 
     override fun reset() {
+        super.reset()
         destroy()
     }
 

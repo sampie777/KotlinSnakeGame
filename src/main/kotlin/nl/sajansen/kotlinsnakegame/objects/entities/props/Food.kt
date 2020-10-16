@@ -18,9 +18,6 @@ class Food(
     override var solid = false
     var points = 1
 
-    override fun reset() {
-    }
-
     override fun step() {
     }
 

@@ -14,9 +14,6 @@ class Box(
 
     override var sprite = Sprites.BOX_1
 
-    override fun reset() {
-    }
-
     override fun step() {
     }
 }

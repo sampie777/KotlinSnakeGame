@@ -11,9 +11,6 @@ open class HumanProfile : Sprite() {
     override var sprite = Sprites.PLAYER_FACE_1
     override var solid = false
 
-    override fun reset() {
-    }
-
     override fun step() {
     }
 }

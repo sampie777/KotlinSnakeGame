@@ -7,9 +7,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
 import java.awt.image.BufferedImage
-import java.net.URL
 import java.util.logging.Logger
-import javax.imageio.ImageIO
 
 abstract class Sprite : CollidableEntity {
     private val logger = Logger.getLogger(Sprite::class.java.name)
@@ -22,33 +20,20 @@ abstract class Sprite : CollidableEntity {
     open var spriteSpeed = 3
     private var nextUpdateTime: Long = 0
     private var spriteFrameIndex = 0
-    private var bufferedImage: BufferedImage? = null
 
-    private fun spriteResource(): URL? = this::class.java.classLoader.getResource(sprite.path)
+    override fun reset() {
+        nextUpdateTime = 0
+        spriteFrameIndex = 0
+    }
 
     open fun paint(): BufferedImage {
-        loadBufferedImage()
-
-        if (bufferedImage == null) {
+        if (sprite.bufferedImage == null) {
             logger.warning("No image loaded for sprite. Returning empty image.")
             return BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
         }
 
-        val frameImage = getCurrentSpriteFrame(bufferedImage!!)
+        val frameImage = getCurrentSpriteFrame(sprite.bufferedImage!!)
         return scaleImage(frameImage, size.width, size.height)
-    }
-
-    /**
-     * Buffer sprite image
-     */
-    private fun loadBufferedImage() {
-        if (bufferedImage != null) {
-            return
-        }
-
-        val spriteResource =
-            spriteResource() ?: throw IllegalArgumentException("Sprite resource not found: ${sprite.path}")
-        bufferedImage = ImageIO.read(spriteResource)
     }
 
     private fun getCurrentSpriteFrame(image: BufferedImage): BufferedImage {

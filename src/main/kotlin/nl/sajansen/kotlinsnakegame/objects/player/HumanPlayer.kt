@@ -7,7 +7,7 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
-import nl.sajansen.kotlinsnakegame.objects.entities.other.HumanProfile
+import nl.sajansen.kotlinsnakegame.objects.entities.other.Gnome
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
@@ -18,10 +18,9 @@ import java.util.logging.Logger
 class HumanPlayer(
     override var name: String = "Player",
     var startPosition: Point? = null
-) : Player, HumanProfile(), KeyEventListener {
+) : Player, Gnome(), KeyEventListener {
     private val logger = Logger.getLogger(HumanPlayer::class.java.name)
 
-    var direction: Direction = Direction.NONE
     var speed = 5
     override var score = 0
         set(value) {
@@ -43,8 +42,11 @@ class HumanPlayer(
     }
 
     override fun reset() {
+        super.reset()
+
         setRandomStartPosition()
 
+        direction = Direction.NONE
         position = startPosition?.clone() as Point? ?: Point(0, 0)
         score = 0
         Game.board.entities.remove(this)

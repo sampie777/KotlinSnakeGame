@@ -14,9 +14,6 @@ class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite() {
 
     override var sprite = Sprites.SNAKE_HEAD_1
 
-    override fun reset() {
-    }
-
     override fun step() {
     }
 

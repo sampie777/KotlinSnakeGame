@@ -40,9 +40,6 @@ class Star(
 
     private var dieAtTime = -1L
 
-    override fun reset() {
-    }
-
     override fun step() {
         if (dieAtTime > 0 && dieAtTime < Game.state.time) {
             die()
