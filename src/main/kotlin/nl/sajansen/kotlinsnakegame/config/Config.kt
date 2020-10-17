@@ -11,6 +11,7 @@ object Config {
     // GUI
     var maxFps: Long = 25
     var fontFamily = "Dialog"
+    var mainVolume: Float = 0.8f
 
     // Game
     var stepPerSeconds: Long = 25
