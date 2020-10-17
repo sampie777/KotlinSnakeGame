@@ -32,6 +32,11 @@ class HumanPlayer(
 
     private var previousPosition = Point(0, 0)
     private var pushFood = false
+    private var keysPressedUp = false
+    private var keysPressedRight = false
+    private var keysPressedDown = false
+    private var keysPressedLeft = false
+    private var keyPresses = arrayListOf<Direction>()
 
     // Controls
     private var upKey: Int = Config.player1UpKey
@@ -68,26 +73,39 @@ class HumanPlayer(
 
     override fun keyPressed(e: KeyEvent) {
         when (e.keyCode) {
-            upKey -> direction = Direction.NORTH
-            rightKey -> direction = Direction.EAST
-            downKey -> direction = Direction.SOUTH
-            leftKey -> direction = Direction.WEST
+            upKey -> addDirection(Direction.NORTH)
+            rightKey -> addDirection(Direction.EAST)
+            downKey -> addDirection(Direction.SOUTH)
+            leftKey -> addDirection(Direction.WEST)
             Config.playerPushFood -> pushFood = true
         }
+
+        calculateDirection()
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (e.keyCode == upKey && direction == Direction.NORTH) {
-            direction = Direction.NONE
-        } else if (e.keyCode == rightKey && direction == Direction.EAST) {
-            direction = Direction.NONE
-        } else if (e.keyCode == downKey && direction == Direction.SOUTH) {
-            direction = Direction.NONE
-        } else if (e.keyCode == leftKey && direction == Direction.WEST) {
-            direction = Direction.NONE
-        } else if (e.keyCode == Config.playerPushFood) {
-            pushFood = false
+        when (e.keyCode) {
+            upKey -> removeDirection(Direction.NORTH)
+            rightKey -> removeDirection(Direction.EAST)
+            downKey -> removeDirection(Direction.SOUTH)
+            leftKey -> removeDirection(Direction.WEST)
+            Config.playerPushFood -> pushFood = false
         }
+
+        calculateDirection()
+    }
+
+    private fun addDirection(direction: Direction) {
+        removeDirection(direction)
+        keyPresses.add(direction)
+    }
+
+    private fun removeDirection(direction: Direction) {
+        keyPresses.remove(direction)
+    }
+
+    private fun calculateDirection() {
+        direction = if (keyPresses.size == 0) Direction.NONE else keyPresses.last()
     }
 
     override fun destroy() {
