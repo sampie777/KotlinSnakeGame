@@ -8,6 +8,9 @@ import java.util.logging.Logger
 object Config {
     private val logger = Logger.getLogger(Config.toString())
 
+    // Feature toggles
+    var onScreenButtons = false
+
     // GUI
     var maxFps: Long = 25
     var fontFamily = "Dialog"

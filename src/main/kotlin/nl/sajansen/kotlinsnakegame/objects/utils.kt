@@ -14,6 +14,11 @@ fun isPointInSprite(point: Point, sprite: Sprite): Boolean {
             point.y > sprite.position.y && point.y < sprite.position.y + sprite.size.height
 }
 
+fun isPointInArea(point: Point, areaPoint: Point, areaSize: Dimension): Boolean {
+    return point.x > areaPoint.x && point.x < areaPoint.x + areaSize.width &&
+            point.y > areaPoint.y && point.y < areaPoint.y + areaSize.height
+}
+
 fun isPointInSprite(point: Point, size: Dimension, sprite: Sprite): Boolean {
     return point.x + size.width > sprite.position.x
             && point.x < sprite.position.x + sprite.size.width

@@ -8,7 +8,7 @@ import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
-import nl.sajansen.kotlinsnakegame.objects.visuals.GameOverlay
+import nl.sajansen.kotlinsnakegame.objects.visuals.ScreenManager
 import java.awt.Graphics2D
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
@@ -62,12 +62,22 @@ object Game : KeyEventListener {
     }
 
     fun pause() {
+        if (state.runningState != GameRunningState.STARTED) {
+            logger.info("Can't pause game. Game isn't even running")
+            return
+        }
+
         logger.info("Pausing game")
         GameStepTimer.stop()
         state.runningState = GameRunningState.PAUSED
     }
 
     fun unpause() {
+        if (state.runningState != GameRunningState.PAUSED) {
+            logger.info("Can't unpause game. Game isn't paused")
+            return
+        }
+
         logger.info("Unpausing game")
         GameStepTimer.restart()
         state.runningState = GameRunningState.STARTED
@@ -100,7 +110,7 @@ object Game : KeyEventListener {
         val (bufferedImage, g: Graphics2D) = createGraphics(board.windowSize.width, board.windowSize.height)
 
         g.drawImage(board.paint(), null, 0, 0)
-        g.drawImage(GameOverlay.paint(), null, 0, 0)
+        g.drawImage(ScreenManager.paint(), null, 0, 0)
 
         g.dispose()
         return bufferedImage
