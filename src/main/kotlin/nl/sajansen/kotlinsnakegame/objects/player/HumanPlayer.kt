@@ -5,6 +5,7 @@ import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
+import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.other.Gnome
@@ -133,17 +134,7 @@ class HumanPlayer(
             return
         }
 
-        if (position.x + size.width / 2 < 0) {
-            position.x = Game.board.size.width - size.width / 2
-        } else if (position.x + size.width / 2 > Game.board.size.width) {
-            position.x = -size.width / 2
-        }
-
-        if (position.y + size.height / 2 < 0) {
-            position.y = Game.board.size.height - size.height / 2
-        } else if (position.y + size.height / 2 > Game.board.size.height) {
-            position.y = -size.height / 2
-        }
+        adjustPositionForWall(position, size)
     }
 
     override fun collidedWith(entity: Entity) {

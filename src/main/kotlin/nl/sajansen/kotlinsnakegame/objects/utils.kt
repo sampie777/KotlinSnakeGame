@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame.objects
 
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
+import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Dimension
@@ -45,4 +46,25 @@ fun colorizeImage(image: BufferedImage, color: Color): BufferedImage {
 
     g.dispose()
     return bufferedImage
+}
+
+/**
+ * Warp object through walls to the other side.
+ * sizeMarginFactor: specify the amount of the object which is allowed to be outside of the walls before triggering the warp
+ */
+@Suppress("DuplicatedCode")
+fun adjustPositionForWall(position: Point, size: Dimension, sizeMarginFactor: Double = 0.5) {
+    val widthMargin = (size.width * sizeMarginFactor).toInt()
+    if (position.x + widthMargin < 0) {
+        position.x = (Game.board.size.width - (size.width - widthMargin))
+    } else if (position.x + (size.width - widthMargin) > Game.board.size.width) {
+        position.x = -widthMargin
+    }
+
+    val heightMargin = (size.height * sizeMarginFactor).toInt()
+    if (position.y + heightMargin < 0) {
+        position.y = (Game.board.size.height - (size.height - heightMargin))
+    } else if (position.y + (size.height - heightMargin) > Game.board.size.height) {
+        position.y = -heightMargin
+    }
 }

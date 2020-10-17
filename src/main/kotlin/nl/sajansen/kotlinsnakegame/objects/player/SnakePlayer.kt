@@ -6,6 +6,7 @@ import nl.sajansen.kotlinsnakegame.events.ConfigEventListener
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.Direction
+import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
@@ -176,17 +177,7 @@ class SnakePlayer(
             }
         }
 
-        if (headEntity.position.x + headEntity.size.width / 2 < 0) {
-            headEntity.position.x = Game.board.size.width - headEntity.size.width
-        } else if (headEntity.position.x + headEntity.size.width / 2 > Game.board.size.width) {
-            headEntity.position.x = 0
-        }
-
-        if (headEntity.position.y + headEntity.size.height / 2 < 0) {
-            headEntity.position.y = Game.board.size.height - headEntity.size.height
-        } else if (headEntity.position.y + headEntity.size.height / 2 > Game.board.size.height) {
-            headEntity.position.y = 0
-        }
+        adjustPositionForWall(headEntity.position, headEntity.size, sizeMarginFactor = 0.0)
     }
 
     private fun cutOffBodyAt(body: SnakeBody) {

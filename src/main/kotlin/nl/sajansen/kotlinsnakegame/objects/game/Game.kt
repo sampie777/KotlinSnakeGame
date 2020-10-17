@@ -4,6 +4,7 @@ import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.board.Board
+import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
@@ -18,7 +19,7 @@ object Game : KeyEventListener {
 
     var state = GameState()
     var players = arrayListOf<Player>()
-    var board = Board()
+    var board: Board = DefaultBoard()
     var deathMessage = ""
 
     init {
