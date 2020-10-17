@@ -1,4 +1,4 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents
+package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 import java.awt.Dimension
 import java.awt.Point

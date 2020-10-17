@@ -6,9 +6,9 @@ import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
 import nl.sajansen.kotlinsnakegame.objects.player.Player
+import nl.sajansen.kotlinsnakegame.objects.screens.*
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
-import nl.sajansen.kotlinsnakegame.objects.visuals.ScreenManager
 import java.awt.Graphics2D
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
@@ -33,6 +33,9 @@ object Game : KeyEventListener {
 
         GameStepTimer.restart()
 
+        ScreenManager.closeAll()
+        GameOverlay.show()
+
         state.runningState = GameRunningState.STARTED
         logger.info("Game has started")
     }
@@ -44,6 +47,7 @@ object Game : KeyEventListener {
     override fun keyReleased(e: KeyEvent) {
         if (state.runningState == GameRunningState.RESET) {
             // Restart game on any key press
+            StartScreen.close()
             restart()
             return
         }
@@ -70,6 +74,7 @@ object Game : KeyEventListener {
         logger.info("Pausing game")
         GameStepTimer.stop()
         state.runningState = GameRunningState.PAUSED
+        PauseScreen.show()
     }
 
     fun unpause() {
@@ -81,6 +86,7 @@ object Game : KeyEventListener {
         logger.info("Unpausing game")
         GameStepTimer.restart()
         state.runningState = GameRunningState.STARTED
+        PauseScreen.close()
     }
 
     fun addPlayer(player: Player): Player {
@@ -95,6 +101,7 @@ object Game : KeyEventListener {
         SoundPlayer.play(sound)
 
         GameStepTimer.stop()
+        GameOverScreen.show()
     }
 
     fun reset() {

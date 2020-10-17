@@ -1,4 +1,4 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals
+package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Color

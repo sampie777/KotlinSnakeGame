@@ -1,12 +1,13 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents
+package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
+import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-open class Label(open val text: String = "") : DrawableComponent {
+open class Label(open var text: String = "") : DrawableComponent {
     private val logger = Logger.getLogger(Label::class.java.name)
 
     override var position: Point = Point(0, 0)
@@ -57,5 +58,12 @@ open class Label(open val text: String = "") : DrawableComponent {
         val textHeight = g.fontMetrics.height
 
         size = Dimension(textWidth + 2 * margin.width, textHeight + 2 * margin.height)
+
+        if (componentAlignmentX == ComponentAlignment.CENTER) {
+            position.x = (Game.board.windowSize.width - size.width) / 2
+        }
+        if (componentAlignmentY == ComponentAlignment.CENTER) {
+            position.y = (Game.board.windowSize.height - size.height) / 2
+        }
     }
 }

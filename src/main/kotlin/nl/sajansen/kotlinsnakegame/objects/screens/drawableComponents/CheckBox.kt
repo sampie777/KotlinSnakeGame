@@ -1,4 +1,4 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents
+package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics

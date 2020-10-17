@@ -1,17 +1,18 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals.settingsScreen
+package nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen
 
 
 import nl.sajansen.kotlinsnakegame.config.Config
-import nl.sajansen.kotlinsnakegame.objects.visuals.Screen
-import nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents.*
+import nl.sajansen.kotlinsnakegame.objects.screens.Screen
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.CheckBox
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
 import java.awt.Font
 import java.awt.Point
 import java.util.logging.Logger
 
-class SettingsScreen : Screen() {
+object SettingsScreen : Screen() {
     private val logger = Logger.getLogger(SettingsScreen::class.java.name)
-
-    override var components = arrayListOf<DrawableComponent>()
 
     init {
         val titleLabel = Label("Settings")
@@ -42,7 +43,6 @@ class SettingsScreen : Screen() {
         backButton.backgroundColor = null
         backButton.position = Point(10, 10)
         backButton.onClick = {
-            println("Going back")
             close()
         }
         components.add(backButton)

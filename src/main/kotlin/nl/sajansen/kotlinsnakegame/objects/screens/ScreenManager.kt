@@ -1,4 +1,4 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals
+package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.MouseEventListener
@@ -22,6 +22,11 @@ object ScreenManager : MouseEventListener {
         return screens.lastOrNull()
     }
 
+    fun previousScreen(screen: Screen): Screen? {
+        val currentIndex = screens.indexOf(screen)
+        return screens.getOrNull(currentIndex - 1)
+    }
+
     fun paint(): BufferedImage {
         if (screens.size == 0) {
             return BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
@@ -29,10 +34,22 @@ object ScreenManager : MouseEventListener {
 
         val (bufferedImage, g: Graphics2D) = createGraphics(Game.board.windowSize.width, Game.board.windowSize.height)
 
-        currentScreen()?.paint(g)
+        paintScreen(g, currentScreen())
 
         g.dispose()
         return bufferedImage
+    }
+
+    private fun paintScreen(g: Graphics2D, screen: Screen?) {
+        if (screen == null) {
+            return
+        }
+
+        if (screen.paintAsOverlay) {
+            paintScreen(g, previousScreen(screen))
+        }
+
+        screen.paint(g)
     }
 
     override fun mouseClicked(e: MouseEvent) {
@@ -40,10 +57,17 @@ object ScreenManager : MouseEventListener {
     }
 
     fun show(screen: Screen) {
+        logger.info("Opening screen ${screen.javaClass.name}")
         screens.add(screen)
     }
 
     fun close(screen: Screen) {
+        logger.info("Closing screen ${screen.javaClass.name}")
         screens.remove(screen)
+    }
+
+    fun closeAll() {
+        logger.info("Closing all screens")
+        screens.clear()
     }
 }

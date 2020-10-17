@@ -1,11 +1,11 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals
+package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.events.MouseEventListener
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isPointInArea
-import nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents.ClickableComponent
-import nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents.ComponentAlignment
-import nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents.DrawableComponent
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ClickableComponent
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.DrawableComponent
 import java.awt.Graphics2D
 import java.awt.event.MouseEvent
 
@@ -13,25 +13,30 @@ abstract class Screen : MouseEventListener {
     open var components: ArrayList<DrawableComponent> = arrayListOf()
     open var backgroundOpacity = 255
 
-    fun show() {
-        println("Opening ${this.javaClass.name}")
+    // If set to true, the previous screen will also be painted
+    open var paintAsOverlay = false
+
+    open fun show() {
         ScreenManager.show(this)
     }
 
-    fun close() {
-        println("Closing ${this.javaClass.name}")
+    open fun close() {
         ScreenManager.close(this)
+    }
+
+    open fun add(component: DrawableComponent) {
+        components.add(component)
     }
 
     open fun paint(g: Graphics2D) {
         paintBackground(g, backgroundOpacity)
 
         components.forEach {
-            when {
-                it.componentAlignmentX == ComponentAlignment.CENTER ->
-                    it.position.x = (Game.board.windowSize.width - it.size.width) / 2
-                it.componentAlignmentY == ComponentAlignment.CENTER ->
-                    it.position.y = (Game.board.windowSize.height - it.size.height) / 2
+            if (it.componentAlignmentX == ComponentAlignment.CENTER) {
+                it.position.x = (Game.board.windowSize.width - it.size.width) / 2
+            }
+            if (it.componentAlignmentY == ComponentAlignment.CENTER) {
+                it.position.y = (Game.board.windowSize.height - it.size.height) / 2
             }
 
             g.drawImage(it.paint(), null, it.position.x, it.position.y)

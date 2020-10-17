@@ -1,4 +1,4 @@
-package nl.sajansen.kotlinsnakegame.objects.visuals.drawableComponents
+package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class Button(override val text: String = "") : ClickableComponent, Label(text) {
+class Button(override var text: String = "") : ClickableComponent, Label(text) {
     private val logger = Logger.getLogger(Button::class.java.name)
 
     override var margin = Dimension(50, 12)
