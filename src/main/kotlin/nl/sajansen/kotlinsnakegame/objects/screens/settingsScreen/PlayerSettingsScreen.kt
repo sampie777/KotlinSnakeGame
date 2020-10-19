@@ -1,8 +1,11 @@
 package nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen
 
 
+import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
+import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import nl.sajansen.kotlinsnakegame.objects.screens.Screen
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
@@ -35,9 +38,65 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         }
         components.add(backButton)
 
+        addSwitchTypeButton(Point(100, 150))
+
         if (player !is MovablePlayer) return
 
-        addKeyMappingButtons(Point(200, 200), player)
+        addKeyMappingButtons(Point(250, 250), player)
+    }
+
+    private fun addSwitchTypeButton(position: Point) {
+        val label = Label("Player type")
+        label.position = position
+        components.add(label)
+
+        val button = Button(player::class.java.simpleName)
+        button.backgroundColor = null
+        button.position = Point(position.x + 300, position.y)
+        button.onClick = {
+            if (player is HumanPlayer) {
+                switchPlayerToSnakePlayer()
+            } else {
+                switchPlayerToHumanPlayer()
+            }
+
+            button.text = player::class.java.simpleName
+        }
+        components.add(button)
+    }
+
+    private fun switchPlayerToSnakePlayer() {
+        val newPlayer = SnakePlayer()
+        newPlayer.name = player.name
+
+        if (player is MovablePlayer) {
+            newPlayer.upKey = player.upKey
+            newPlayer.rightKey = player.rightKey
+            newPlayer.downKey = player.downKey
+            newPlayer.leftKey = player.leftKey
+        }
+
+        Game.remove(player)
+        Game.addPlayer(newPlayer)
+        close()
+        PlayerSettingsScreen(newPlayer).show()
+    }
+
+    private fun switchPlayerToHumanPlayer() {
+        val newPlayer = HumanPlayer()
+        newPlayer.name = player.name
+
+        if (player is MovablePlayer) {
+            newPlayer.upKey = player.upKey
+            newPlayer.rightKey = player.rightKey
+            newPlayer.downKey = player.downKey
+            newPlayer.leftKey = player.leftKey
+        }
+
+        Game.remove(player)
+        Game.addPlayer(newPlayer)
+        close()
+        PlayerSettingsScreen(newPlayer).show()
     }
 
     private fun addKeyMappingButtons(position: Point, player: MovablePlayer) {
