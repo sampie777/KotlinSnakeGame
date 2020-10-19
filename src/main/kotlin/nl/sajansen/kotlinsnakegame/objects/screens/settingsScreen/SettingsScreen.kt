@@ -3,9 +3,13 @@ package nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.objects.game.Game
-import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
+import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.screens.Screen
-import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.*
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.CheckBox
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Point
@@ -15,6 +19,15 @@ object SettingsScreen : Screen() {
     private val logger = Logger.getLogger(SettingsScreen::class.java.name)
 
     init {
+        rebuildGui()
+    }
+
+    private fun rebuildGui() {
+        components.clear()
+        initGui()
+    }
+
+    private fun initGui() {
         val titleLabel = Label("Settings")
         titleLabel.position = Point(0, 50)
         titleLabel.componentAlignmentX = ComponentAlignment.CENTER
@@ -33,12 +46,6 @@ object SettingsScreen : Screen() {
         }
         components.add(checkbox)
 
-        val dummyButton = Button("Dummy button")
-        dummyButton.position = Point(0, 300)
-        dummyButton.componentAlignmentX = ComponentAlignment.CENTER
-        dummyButton.onClick = { println("I'm clicked!") }
-        components.add(dummyButton)
-
         val backButton = Button("Back")
         backButton.backgroundColor = null
         backButton.position = Point(10, 10)
@@ -47,40 +54,45 @@ object SettingsScreen : Screen() {
         }
         components.add(backButton)
 
-        addKeyMappingButtons(Point(300, 400), Game.players.filterIsInstance<MovablePlayer>().first())
+        addPlayerSettingsRows(Point(150, 200))
     }
 
-    private fun addKeyMappingButtons(position: Point, player: MovablePlayer) {
-        val horizontalSpacing = 135
-        val verticalSpacing = 55
-        val size = Dimension(130, 50)
+    private fun addPlayerSettingsRows(position: Point) {
+        Game.players.forEachIndexed { index, player ->
+            playerSettingsRow(
+                Point(position.x, position.y + index * 50),
+                player
+            )
+        }
+    }
 
-        val upKeyButton = KeyMappingButton(player.upKey)
-        upKeyButton.position = Point(position.x + horizontalSpacing, position.y + 0)
-        upKeyButton.size = size
-        upKeyButton.allowEmpty = false
-        upKeyButton.onSave = { player.upKey = it!!.keyCode }
-        components.add(upKeyButton)
+    private fun playerSettingsRow(position: Point, player: Player) {
+        val nameLabel = Label(player.name)
+        nameLabel.position = position
+        nameLabel.font = Font("Dialog", Font.ITALIC, 20)
+        components.add(nameLabel)
 
-        val leftKeyButton = KeyMappingButton(player.leftKey)
-        leftKeyButton.position = Point(position.x + 0, position.y + verticalSpacing)
-        leftKeyButton.size = size
-        leftKeyButton.allowEmpty = false
-        leftKeyButton.onSave = { player.leftKey = it!!.keyCode }
-        components.add(leftKeyButton)
+        val playerSettingsButton = Button("Settings")
+        playerSettingsButton.position = Point(position.x + 300, position.y)
+        playerSettingsButton.onClick = { showSettingsForPlayer(player) }
+        components.add(playerSettingsButton)
 
-        val downKeyButton = KeyMappingButton(player.downKey)
-        downKeyButton.position = Point(position.x + horizontalSpacing, position.y + verticalSpacing)
-        downKeyButton.size = size
-        downKeyButton.allowEmpty = false
-        downKeyButton.onSave = { player.downKey = it!!.keyCode }
-        components.add(downKeyButton)
+        val playerRemoveButton = Button("X")
+        playerRemoveButton.position = Point(position.x + 500, position.y)
+        playerRemoveButton.margin = Dimension(10, 10)
+        playerRemoveButton.backgroundColor = Color(168, 66, 66)
+        playerRemoveButton.onClick = { removePlayer(player) }
+        components.add(playerRemoveButton)
+    }
 
-        val rightKeyButton = KeyMappingButton(player.rightKey)
-        rightKeyButton.position = Point(position.x + 2 * horizontalSpacing, position.y + verticalSpacing)
-        rightKeyButton.size = size
-        rightKeyButton.allowEmpty = false
-        rightKeyButton.onSave = { player.rightKey = it!!.keyCode }
-        components.add(rightKeyButton)
+    private fun removePlayer(player: Player) {
+        logger.info("RemovePlayer clicked for $player")
+        Game.remove(player)
+        rebuildGui()
+    }
+
+    private fun showSettingsForPlayer(player: Player) {
+        logger.info("showSettingsForPlayer clicked for $player")
+        PlayerSettingsScreen(player).show()
     }
 }

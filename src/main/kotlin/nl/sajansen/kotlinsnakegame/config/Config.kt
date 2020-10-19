@@ -9,7 +9,7 @@ object Config {
     private val logger = Logger.getLogger(Config.toString())
 
     // Feature toggles
-    var onScreenButtons = false
+    var onScreenButtons = true
 
     // GUI
     var maxFps: Long = 25

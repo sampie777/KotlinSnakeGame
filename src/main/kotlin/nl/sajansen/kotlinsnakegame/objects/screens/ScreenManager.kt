@@ -78,10 +78,18 @@ object ScreenManager : MouseEventListener, KeyEventListener {
     }
 
     override fun keyReleased(e: KeyEvent) {
-        currentScreen().let {
-            if (it !is KeyEventListener) return@let
+        currentScreen().let { screen ->
+            if (screen is KeyEventListener) {
+                logger.info("Forwarding keyReleased event to current screen")
+                screen.keyReleased(e)
+            }
 
-            it.keyReleased(e)
+            screen!!.components.forEach { component ->
+                if (component !is KeyEventListener) {
+                    return@forEach
+                }
+                component.keyReleased(e)
+            }
         }
     }
 }

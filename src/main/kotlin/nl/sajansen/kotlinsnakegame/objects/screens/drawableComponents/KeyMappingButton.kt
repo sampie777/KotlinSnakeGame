@@ -2,7 +2,6 @@ package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
 import nl.sajansen.kotlinsnakegame.createKeyEvent
-import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.keyEventToString
@@ -15,7 +14,7 @@ import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableComponent, Label("") {
+class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableComponent, Label(""), KeyEventListener {
     private val logger = Logger.getLogger(KeyMappingButton::class.java.name)
 
     override var margin = Dimension(50, 12)
@@ -103,6 +102,10 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
             onSave?.invoke(keyEvent)
         }
     }
+
+    override fun keyReleased(e: KeyEvent) {
+        keyEventListener.processKeyEvent(e)
+    }
 }
 
 private class KeyEventButtonKeyListener : KeyEventListener {
@@ -111,10 +114,6 @@ private class KeyEventButtonKeyListener : KeyEventListener {
     private var isCalibrating: Boolean = false
     private var calibrationCallback : ((KeyEvent) -> Unit)? = null
 
-    init {
-        EventHub.register(this)
-    }
-
     override fun keyReleased(e: KeyEvent) {
         processKeyEvent(e)
     }
@@ -122,11 +121,7 @@ private class KeyEventButtonKeyListener : KeyEventListener {
     fun processKeyEvent(e: KeyEvent) {
         if (!isCalibrating) return
 
-        // Remove Num lock, Scroll lock, and Caps lock
-//        e.modifiers = e.modifiers.and(KeyEvent.NUM_LOCK_MASK - 1)
-
         processCalibration(e)
-        return
     }
 
     private fun processCalibration(e: KeyEvent) {

@@ -118,4 +118,9 @@ object Game : KeyEventListener {
         g.dispose()
         return bufferedImage
     }
+
+    fun remove(player: Player) {
+        logger.info("Removing $player")
+        players.remove(player)
+    }
 }
