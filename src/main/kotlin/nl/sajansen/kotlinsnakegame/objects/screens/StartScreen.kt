@@ -4,7 +4,6 @@ package nl.sajansen.kotlinsnakegame.objects.screens
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.objects.game.Game
-import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
 import java.awt.Font
@@ -27,8 +26,6 @@ object StartScreen : Screen(), KeyEventListener {
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (Game.state.runningState != GameRunningState.RESET) return
-
         // Restart game on any key press
         close()
         Game.restart()

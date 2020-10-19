@@ -28,7 +28,7 @@ class HumanPlayer(
     override var score = 0
         set(value) {
             field = value
-            logger.info("Player scores increases to: $value")
+            logger.info("$name scores increases to: $value")
         }
 
     private var previousPosition = Point(0, 0)

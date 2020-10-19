@@ -34,8 +34,8 @@ object GameOverScreen : Screen() {
         GameOverlay.addControlsOverlay(this)
     }
 
-    override fun show() {
-        super.show()
+    override fun show(index: Int?) {
+        super.show(index)
         messageLabel.text = Game.deathMessage
     }
 }

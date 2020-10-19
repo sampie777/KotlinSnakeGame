@@ -16,8 +16,8 @@ abstract class Screen : MouseEventListener {
     // If set to true, the previous screen will also be painted
     open var paintAsOverlay = false
 
-    open fun show() {
-        ScreenManager.show(this)
+    open fun show(index: Int? = null) {
+        ScreenManager.show(this, index)
     }
 
     open fun close() {

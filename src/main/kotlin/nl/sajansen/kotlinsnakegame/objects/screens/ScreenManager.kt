@@ -54,9 +54,14 @@ object ScreenManager : MouseEventListener, KeyEventListener {
         screen.paint(g)
     }
 
-    fun show(screen: Screen) {
-        logger.info("Opening screen ${screen.javaClass.name}")
-        screens.add(screen)
+    fun show(screen: Screen, index: Int? = null) {
+        if (index == null || index >= screens.size) {
+            logger.info("Showing screen ${screen.javaClass.name}")
+            screens.add(screen)
+        } else {
+            logger.info("Showing screen ${screen.javaClass.name} at index $index")
+            screens.add(index, screen)
+        }
     }
 
     fun close(screen: Screen) {
@@ -80,7 +85,7 @@ object ScreenManager : MouseEventListener, KeyEventListener {
     override fun keyReleased(e: KeyEvent) {
         currentScreen().let { screen ->
             if (screen is KeyEventListener) {
-                logger.info("Forwarding keyReleased event to current screen")
+                logger.info("Forwarding keyReleased event to current screen $screen")
                 screen.keyReleased(e)
             }
 

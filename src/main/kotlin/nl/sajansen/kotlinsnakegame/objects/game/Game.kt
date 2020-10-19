@@ -31,7 +31,6 @@ object Game : KeyEventListener {
 
     fun restart() {
         logger.info("Restarting game")
-        resetState()
         reset()
 
         GameStepTimer.restart()
@@ -56,7 +55,7 @@ object Game : KeyEventListener {
     fun togglePause() {
         if (state.runningState == GameRunningState.PAUSED) {
             unpause()
-        } else if (state.runningState == GameRunningState.STARTED) {
+        } else {
             pause()
         }
     }
@@ -91,17 +90,20 @@ object Game : KeyEventListener {
         return player
     }
 
-    fun end(reason: String, sound: Sounds = Sounds.GAME_END) {
+    fun end(reason: String, sound: Sounds? = Sounds.GAME_END) {
         logger.info("Game ended: $reason")
         deathMessage = reason
         state.runningState = GameRunningState.ENDED
-        SoundPlayer.play(sound)
+        if (sound != null) {
+            SoundPlayer.play(sound)
+        }
 
         GameStepTimer.stop()
         GameOverScreen.show()
     }
 
     fun reset() {
+        resetState()
         board.reset()
     }
 

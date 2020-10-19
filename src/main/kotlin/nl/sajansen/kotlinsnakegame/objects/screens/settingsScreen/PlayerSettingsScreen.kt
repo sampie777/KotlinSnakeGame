@@ -6,7 +6,10 @@ import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
+import nl.sajansen.kotlinsnakegame.objects.screens.GameOverlay
+import nl.sajansen.kotlinsnakegame.objects.screens.PauseScreen
 import nl.sajansen.kotlinsnakegame.objects.screens.Screen
+import nl.sajansen.kotlinsnakegame.objects.screens.StartScreen
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.KeyMappingButton
@@ -67,36 +70,40 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
 
     private fun switchPlayerToSnakePlayer() {
         val newPlayer = SnakePlayer()
-        newPlayer.name = player.name
-
-        if (player is MovablePlayer) {
-            newPlayer.upKey = player.upKey
-            newPlayer.rightKey = player.rightKey
-            newPlayer.downKey = player.downKey
-            newPlayer.leftKey = player.leftKey
-        }
-
-        Game.remove(player)
-        Game.addPlayer(newPlayer)
-        close()
-        PlayerSettingsScreen(newPlayer).show()
+        copyPropertiesToNewPlayer(player, newPlayer)
+        replacePlayer(player, newPlayer)
     }
 
     private fun switchPlayerToHumanPlayer() {
         val newPlayer = HumanPlayer()
-        newPlayer.name = player.name
+        copyPropertiesToNewPlayer(player, newPlayer)
+        replacePlayer(player, newPlayer)
+    }
 
-        if (player is MovablePlayer) {
-            newPlayer.upKey = player.upKey
-            newPlayer.rightKey = player.rightKey
-            newPlayer.downKey = player.downKey
-            newPlayer.leftKey = player.leftKey
+    private fun copyPropertiesToNewPlayer(oldPlayer: Player, newPlayer: Player) {
+        newPlayer.name = oldPlayer.name
+
+        if (oldPlayer is MovablePlayer && newPlayer is MovablePlayer) {
+            newPlayer.upKey = oldPlayer.upKey
+            newPlayer.rightKey = oldPlayer.rightKey
+            newPlayer.downKey = oldPlayer.downKey
+            newPlayer.leftKey = oldPlayer.leftKey
         }
+    }
 
-        Game.remove(player)
+    private fun replacePlayer(oldPlayer: Player, newPlayer: Player) {
+        Game.remove(oldPlayer)
         Game.addPlayer(newPlayer)
+
         close()
         PlayerSettingsScreen(newPlayer).show()
+        requireGameRestart()
+    }
+
+    private fun requireGameRestart() {
+        GameOverlay.close()
+        PauseScreen.close()
+        StartScreen.show(0)
     }
 
     private fun addKeyMappingButtons(position: Point, player: MovablePlayer) {
