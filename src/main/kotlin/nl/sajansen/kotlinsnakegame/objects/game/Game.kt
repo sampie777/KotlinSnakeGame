@@ -86,6 +86,7 @@ object Game : KeyEventListener {
     }
 
     fun addPlayer(player: Player): Player {
+        logger.info("Adding new player: $player")
         players.add(player)
         return player
     }

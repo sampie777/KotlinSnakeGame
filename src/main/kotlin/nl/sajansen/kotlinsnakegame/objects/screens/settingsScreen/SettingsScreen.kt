@@ -3,6 +3,7 @@ package nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.screens.Screen
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
@@ -54,16 +55,24 @@ object SettingsScreen : Screen() {
         }
         components.add(backButton)
 
-        addPlayerSettingsRows(Point(150, 200))
+        addPlayerSettingsRows(Point(150, 220))
     }
 
     private fun addPlayerSettingsRows(position: Point) {
+        val rowVerticalMargin = 50
+
         Game.players.forEachIndexed { index, player ->
             playerSettingsRow(
-                Point(position.x, position.y + index * 50),
+                Point(position.x, position.y + index * rowVerticalMargin),
                 player
             )
         }
+
+
+        val playerSettingsButton = Button("Add player")
+        playerSettingsButton.position = Point(position.x, position.y + Game.players.size * rowVerticalMargin)
+        playerSettingsButton.onClick = { addPlayer() }
+        components.add(playerSettingsButton)
     }
 
     private fun playerSettingsRow(position: Point, player: Player) {
@@ -85,14 +94,19 @@ object SettingsScreen : Screen() {
         components.add(playerRemoveButton)
     }
 
+    private fun showSettingsForPlayer(player: Player) {
+        logger.info("showSettingsForPlayer clicked for $player")
+        PlayerSettingsScreen(player).show()
+    }
+
     private fun removePlayer(player: Player) {
         logger.info("RemovePlayer clicked for $player")
         Game.remove(player)
         rebuildGui()
     }
 
-    private fun showSettingsForPlayer(player: Player) {
-        logger.info("showSettingsForPlayer clicked for $player")
-        PlayerSettingsScreen(player).show()
+    private fun addPlayer() {
+        Game.addPlayer(HumanPlayer())
+        rebuildGui()
     }
 }
