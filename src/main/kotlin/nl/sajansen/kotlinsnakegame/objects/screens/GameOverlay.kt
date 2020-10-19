@@ -106,10 +106,11 @@ object GameOverlay : Screen() {
 
     fun addControlsOverlay(screen: Screen) {
         if (Config.onScreenButtons) {
-            val settingsButton = Button("S")
+            val settingsButton = Button("Settings")
             settingsButton.position = Point(10, 10)
             settingsButton.backgroundColor = Color(255, 255, 255, 10)
-            settingsButton.size = Dimension(30, 30)
+            settingsButton.font = Font("Dialog", Font.PLAIN, 16)
+            settingsButton.lineWidth = 1F
             settingsButton.margin = Dimension(5, 5)
             settingsButton.onClick = {
                 logger.info("Settings button clicked")

@@ -1,15 +1,17 @@
 package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.events.EventHub
+import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.events.MouseEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Graphics2D
+import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-object ScreenManager : MouseEventListener {
+object ScreenManager : MouseEventListener, KeyEventListener {
     private val logger = Logger.getLogger(ScreenManager::class.java.name)
 
     private var screens: ArrayList<Screen> = arrayListOf()
@@ -52,10 +54,6 @@ object ScreenManager : MouseEventListener {
         screen.paint(g)
     }
 
-    override fun mouseClicked(e: MouseEvent) {
-        currentScreen()?.mouseClicked(e)
-    }
-
     fun show(screen: Screen) {
         logger.info("Opening screen ${screen.javaClass.name}")
         screens.add(screen)
@@ -69,5 +67,21 @@ object ScreenManager : MouseEventListener {
     fun closeAll() {
         logger.info("Closing all screens")
         screens.clear()
+    }
+
+    override fun mouseClicked(e: MouseEvent) {
+        currentScreen().let {
+            if (it !is MouseEventListener) return@let
+
+            it.mouseClicked(e)
+        }
+    }
+
+    override fun keyReleased(e: KeyEvent) {
+        currentScreen().let {
+            if (it !is KeyEventListener) return@let
+
+            it.keyReleased(e)
+        }
     }
 }

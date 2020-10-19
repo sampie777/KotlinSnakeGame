@@ -21,7 +21,7 @@ import java.util.logging.Logger
 class HumanPlayer(
     override var name: String = "Player",
     var startPosition: Point? = null
-) : Player, Gnome(), KeyEventListener {
+) : Player, MovablePlayer, Gnome(), KeyEventListener {
     private val logger = Logger.getLogger(HumanPlayer::class.java.name)
 
     var speed = 5
@@ -40,10 +40,10 @@ class HumanPlayer(
     private var keyPresses = arrayListOf<Direction>()
 
     // Controls
-    private var upKey: Int = Config.player1UpKey
-    private var rightKey: Int = Config.player1RightKey
-    private var downKey: Int = Config.player1DownKey
-    private var leftKey: Int = Config.player1LeftKey
+    override var upKey: Int = Config.player1UpKey
+    override var rightKey: Int = Config.player1RightKey
+    override var downKey: Int = Config.player1DownKey
+    override var leftKey: Int = Config.player1LeftKey
 
     init {
         EventHub.register(this)
@@ -59,13 +59,6 @@ class HumanPlayer(
         score = 0
         Game.board.entities.remove(this)
         Game.board.entities.add(this)
-    }
-
-    fun setControls(up: Int, right: Int, down: Int, left: Int) {
-        upKey = up
-        rightKey = right
-        downKey = down
-        leftKey = left
     }
 
     fun setRandomStartPosition() {

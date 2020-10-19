@@ -1,6 +1,8 @@
 package nl.sajansen.kotlinsnakegame
 
+import nl.sajansen.kotlinsnakegame.gui.mainFrame.MainFrame
 import java.awt.Color
+import java.awt.event.KeyEvent
 import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
@@ -78,3 +80,20 @@ fun getFileExtension(file: File): String {
 }
 
 fun Date.format(format: String): String? = SimpleDateFormat(format).format(this)
+
+
+fun createKeyEvent(keyCode: Int) = KeyEvent(MainFrame.getInstance()!!, 0, 0, 0, keyCode, '0')
+
+
+fun keyEventToString(e: KeyEvent?): String {
+    if (e == null) {
+        return ""
+    }
+
+    return listOf(
+        KeyEvent.getKeyModifiersText(e.modifiers),
+        KeyEvent.getKeyText(e.keyCode)
+    )
+        .filter { !it.isBlank() }
+        .joinToString("+")
+}

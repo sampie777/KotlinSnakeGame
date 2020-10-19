@@ -6,7 +6,10 @@ import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
 import nl.sajansen.kotlinsnakegame.objects.player.Player
-import nl.sajansen.kotlinsnakegame.objects.screens.*
+import nl.sajansen.kotlinsnakegame.objects.screens.GameOverScreen
+import nl.sajansen.kotlinsnakegame.objects.screens.GameOverlay
+import nl.sajansen.kotlinsnakegame.objects.screens.PauseScreen
+import nl.sajansen.kotlinsnakegame.objects.screens.ScreenManager
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Graphics2D
@@ -45,13 +48,6 @@ object Game : KeyEventListener {
     }
 
     override fun keyReleased(e: KeyEvent) {
-        if (state.runningState == GameRunningState.RESET) {
-            // Restart game on any key press
-            StartScreen.close()
-            restart()
-            return
-        }
-
         if (e.keyCode == KeyEvent.VK_PAUSE) {
             togglePause()
         }

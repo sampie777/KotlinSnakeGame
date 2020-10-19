@@ -29,7 +29,7 @@ class SnakePlayer(
     override var name: String = "Player",
     color: Color = Color(0, 0, 0, 0),
     var startPosition: Point? = null
-) : Player, KeyEventListener, ConfigEventListener {
+) : Player, MovablePlayer, KeyEventListener, ConfigEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
 
     // Just some empty values, see reset() for the real values
@@ -58,10 +58,10 @@ class SnakePlayer(
     private var starWearsOutTime = 0L
 
     // Controls
-    private var upKey: Int = Config.player1UpKey
-    private var rightKey: Int = Config.player1RightKey
-    private var downKey: Int = Config.player1DownKey
-    private var leftKey: Int = Config.player1LeftKey
+    override var upKey: Int = Config.player1UpKey
+    override var rightKey: Int = Config.player1RightKey
+    override var downKey: Int = Config.player1DownKey
+    override var leftKey: Int = Config.player1LeftKey
 
     init {
         EventHub.register(this)
@@ -318,13 +318,6 @@ class SnakePlayer(
     }
 
     private fun hasStarEffect() = starWearsOutTime > Game.state.time
-
-    fun setControls(up: Int, right: Int, down: Int, left: Int) {
-        upKey = up
-        rightKey = right
-        downKey = down
-        leftKey = left
-    }
 
     fun setRandomStartPosition() {
         startPosition = Game.board.getRandomEmptyPoint(headEntity.size) ?: return
