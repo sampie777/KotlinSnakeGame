@@ -15,6 +15,12 @@ fun main(args: Array<String>) {
     logger.info("Starting application ${ApplicationInfo.artifactId}:${ApplicationInfo.version}")
     logger.info("Executing JAR directory: " + getCurrentJarDirectory(ApplicationInfo).absolutePath)
 
+    if ("--virtualConfig" !in args) {
+        Config.enableWriteToFile(true)
+    }
+    Config.load()
+    Config.save()
+
     EventQueue.invokeLater {
         MainFrame.create()
         StartScreen.show()

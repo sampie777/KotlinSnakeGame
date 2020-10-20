@@ -15,3 +15,9 @@ For each CollidableEntities, collisions are checked with any other Entity except
 All child classes of Sprite must call `super.reset()` when overriding the `reset()` method. If they don't, sprite animation will be delayed when restarting the game.
 
 Sprite images are automatically buffered when the sprite image is recalled. This is done globally. 
+
+### Program Parameters
+
+| Parameter | Description |
+| --- | --- |
+| `--virtualConfig` | Don't save config to file |

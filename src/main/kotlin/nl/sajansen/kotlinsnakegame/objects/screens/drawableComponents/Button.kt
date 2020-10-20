@@ -68,8 +68,10 @@ class Button(override var text: String = "") : ClickableComponent, Label(text), 
     override fun keyReleased(e: KeyEvent) {
         if (hotKey == null) return
 
-        if (e.keyCode == hotKey!!.keyCode && e.modifiers == hotKey!!.modifiers) {
+        if (isHotkey(e)) {
             click(null)
         }
     }
+
+    fun isHotkey(e: KeyEvent) = e.keyCode == hotKey!!.keyCode && e.modifiers == hotKey!!.modifiers
 }
