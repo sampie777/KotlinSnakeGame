@@ -5,7 +5,9 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.events.MouseEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.isPointInArea
 import java.awt.Graphics2D
+import java.awt.event.FocusListener
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
@@ -75,10 +77,20 @@ object ScreenManager : MouseEventListener, KeyEventListener {
     }
 
     override fun mouseClicked(e: MouseEvent) {
-        currentScreen().let {
-            if (it !is MouseEventListener) return@let
+        currentScreen().let { screen ->
+            if (screen is MouseEventListener) {
+                screen.mouseClicked(e)
+            }
 
-            it.mouseClicked(e)
+            screen!!.components
+                .filter { it is FocusListener }
+                .forEach {
+                    if (isPointInArea(e.point, it.position, it.size)) {
+                        (it as FocusListener).focusGained(null)
+                    } else {
+                        (it as FocusListener).focusLost(null)
+                    }
+                }
         }
     }
 

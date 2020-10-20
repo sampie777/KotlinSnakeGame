@@ -8,12 +8,13 @@ import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import java.awt.event.KeyEvent
-import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class TextField(override var text: String = "") : ClickableComponent, Label(text), KeyEventListener {
+class TextField(override var text: String = "") : FocusListener, Label(text), KeyEventListener {
     private val logger = Logger.getLogger(TextField::class.java.name)
 
     override var size: Dimension = Dimension(200, 0)
@@ -28,12 +29,6 @@ class TextField(override var text: String = "") : ClickableComponent, Label(text
     private var cursorPosition = text.length
     private var cursorBlinkTimeCounter = 0
     private var isCursorLit = true
-
-    override fun click(e: MouseEvent?) {
-        isActivate = !isActivate
-        isCursorLit = true
-        showActiveState()
-    }
 
     override fun keyPressed(e: KeyEvent) {
         if (!isActivate) {
@@ -92,10 +87,8 @@ class TextField(override var text: String = "") : ClickableComponent, Label(text
 
     private fun showActiveState() {
         if (isActivate) {
-            logger.info("Activated")
             backgroundColor = Color(122, 122, 122)
         } else {
-            logger.info("Disactivated")
             backgroundColor = Color(92, 92, 92)
         }
     }
@@ -180,5 +173,16 @@ class TextField(override var text: String = "") : ClickableComponent, Label(text
         g.stroke = BasicStroke(1F)
 
         g.drawLine(cursorX, margin.height, cursorX, margin.height + textHeight)
+    }
+
+    override fun focusGained(e: FocusEvent?) {
+        isActivate = true
+        isCursorLit = true
+        showActiveState()
+    }
+
+    override fun focusLost(e: FocusEvent?) {
+        isActivate = false
+        showActiveState()
     }
 }

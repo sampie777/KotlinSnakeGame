@@ -18,7 +18,7 @@ class Button(override var text: String = "") : ClickableComponent, Label(text), 
     override var margin = Dimension(50, 12)
     override var textAlignmentX = ComponentAlignment.CENTER
     var cornerRounding = Dimension(30, 10)
-    var lineWidth = 2F
+    var lineWidth = 1F
     var backgroundColor: Color? = Color(57, 72, 92)
 
     var onClick: ((e: MouseEvent?) -> Unit)? = null
