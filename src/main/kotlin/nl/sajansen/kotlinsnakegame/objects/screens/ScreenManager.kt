@@ -97,4 +97,36 @@ object ScreenManager : MouseEventListener, KeyEventListener {
             }
         }
     }
+
+    override fun keyTyped(e: KeyEvent) {
+        currentScreen().let { screen ->
+            if (screen is KeyEventListener) {
+                logger.info("Forwarding keyTyped event to current screen $screen")
+                screen.keyTyped(e)
+            }
+
+            screen!!.components.forEach { component ->
+                if (component !is KeyEventListener) {
+                    return@forEach
+                }
+                component.keyTyped(e)
+            }
+        }
+    }
+
+    override fun keyPressed(e: KeyEvent) {
+        currentScreen().let { screen ->
+            if (screen is KeyEventListener) {
+                logger.info("Forwarding keyPressed event to current screen $screen")
+                screen.keyPressed(e)
+            }
+
+            screen!!.components.forEach { component ->
+                if (component !is KeyEventListener) {
+                    return@forEach
+                }
+                component.keyPressed(e)
+            }
+        }
+    }
 }

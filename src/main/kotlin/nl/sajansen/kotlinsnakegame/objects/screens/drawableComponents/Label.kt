@@ -51,7 +51,7 @@ open class Label(open var text: String = "") : DrawableComponent {
         }
     }
 
-    protected fun calculateSize() {
+    protected open fun calculateSize() {
         val bufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
         val g: Graphics2D = bufferedImage.createGraphics()
         g.font = font

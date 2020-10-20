@@ -7,10 +7,7 @@ import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import nl.sajansen.kotlinsnakegame.objects.screens.*
-import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
-import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
-import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.KeyMappingButton
-import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
+import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.*
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
@@ -31,17 +28,37 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         titleLabel.font = Font("Dialog", Font.BOLD, 32)
         components.add(titleLabel)
 
-        components.add(backButton())
+        val backButton = backButton()
+        backButton.onClick = {
+            close()
+            SettingsScreen.rebuildGui()
+        }
+        components.add(backButton)
 
-        addSwitchTypeButton(Point(150, 150))
+        addNameTextField(Point(150, 150))
+
+        addSwitchTypeButton(Point(150, 200))
 
         if (player is SnakePlayer) {
-            addColorChooserButton(Point(150, 200))
+            addColorChooserButton(Point(150, 250))
         }
 
         if (player is MovablePlayer) {
-            addKeyMappingButtons(Point(250, 300), player)
+            addKeyMappingButtons(Point(250, 350), player)
         }
+    }
+
+    private fun addNameTextField(position: Point) {
+        val label = Label("Name")
+        label.position = position
+        components.add(label)
+
+        val textField = TextField(player.name)
+        textField.position = Point(position.x + 300, position.y)
+        textField.size = Dimension(260, 0)
+        textField.maxLength = 12
+        textField.onChange = { player.name = it }
+        add(textField)
     }
 
     private fun addColorChooserButton(position: Point) {
@@ -118,7 +135,6 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         Game.remove(oldPlayer)
         Game.addPlayer(newPlayer)
 
-        SettingsScreen.rebuildGui()
         close()
         PlayerSettingsScreen(newPlayer).show()
         requireGameRestart()
