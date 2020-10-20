@@ -1,16 +1,18 @@
 package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
+import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
+import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
-class Button(override var text: String = "") : ClickableComponent, Label(text) {
+class Button(override var text: String = "") : ClickableComponent, Label(text), KeyEventListener {
     private val logger = Logger.getLogger(Button::class.java.name)
 
     override var margin = Dimension(50, 12)
@@ -19,9 +21,10 @@ class Button(override var text: String = "") : ClickableComponent, Label(text) {
     var lineWidth = 2F
     var backgroundColor: Color? = Color(57, 72, 92)
 
-    var onClick: ((e: MouseEvent) -> Unit)? = null
+    var onClick: ((e: MouseEvent?) -> Unit)? = null
+    var hotKey: KeyEvent? = null
 
-    override fun click(e: MouseEvent) {
+    override fun click(e: MouseEvent?) {
         onClick?.invoke(e)
     }
 
@@ -60,5 +63,13 @@ class Button(override var text: String = "") : ClickableComponent, Label(text) {
 
         g.dispose()
         return bufferedImage
+    }
+
+    override fun keyReleased(e: KeyEvent) {
+        if (hotKey == null) return
+
+        if (e.keyCode == hotKey!!.keyCode && e.modifiers == hotKey!!.modifiers) {
+            click(null)
+        }
     }
 }

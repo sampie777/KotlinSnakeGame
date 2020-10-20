@@ -6,14 +6,12 @@ import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
-import nl.sajansen.kotlinsnakegame.objects.screens.GameOverlay
-import nl.sajansen.kotlinsnakegame.objects.screens.PauseScreen
-import nl.sajansen.kotlinsnakegame.objects.screens.Screen
-import nl.sajansen.kotlinsnakegame.objects.screens.StartScreen
+import nl.sajansen.kotlinsnakegame.objects.screens.*
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.KeyMappingButton
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Point
@@ -33,23 +31,48 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         titleLabel.font = Font("Dialog", Font.BOLD, 32)
         components.add(titleLabel)
 
-        val backButton = Button("Back")
-        backButton.backgroundColor = null
-        backButton.position = Point(10, 10)
-        backButton.onClick = {
-            close()
+        components.add(backButton())
+
+        addSwitchTypeButton(Point(150, 150))
+
+        if (player is SnakePlayer) {
+            addColorChooserButton(Point(150, 200))
         }
-        components.add(backButton)
 
-        addSwitchTypeButton(Point(100, 150))
+        if (player is MovablePlayer) {
+            addKeyMappingButtons(Point(250, 300), player)
+        }
+    }
 
-        if (player !is MovablePlayer) return
+    private fun addColorChooserButton(position: Point) {
+        if (player !is SnakePlayer) {
+            return
+        }
 
-        addKeyMappingButtons(Point(250, 250), player)
+        val label = Label("Color")
+        label.position = position
+        components.add(label)
+
+        val button = Button()
+        button.backgroundColor = player.color
+        button.position = Point(position.x + 300, position.y)
+        button.onClick = {
+            player.color = getNextSnakePlayerColor(player)
+            button.backgroundColor = player.color
+        }
+        components.add(button)
+    }
+
+    private fun getNextSnakePlayerColor(player: SnakePlayer): Color {
+        val currentColorIndex = SnakePlayer.availableColors.indexOf(player.color)
+        if (currentColorIndex + 1 >= SnakePlayer.availableColors.size) {
+            return SnakePlayer.availableColors[0]
+        }
+        return SnakePlayer.availableColors[currentColorIndex + 1]
     }
 
     private fun addSwitchTypeButton(position: Point) {
-        val label = Label("Player type")
+        val label = Label("Type")
         label.position = position
         components.add(label)
 
@@ -95,6 +118,7 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         Game.remove(oldPlayer)
         Game.addPlayer(newPlayer)
 
+        SettingsScreen.rebuildGui()
         close()
         PlayerSettingsScreen(newPlayer).show()
         requireGameRestart()

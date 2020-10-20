@@ -24,7 +24,7 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
     var backgroundColor: Color? = Color(74, 84, 97)
 
     var allowEmpty = true
-    var onClick: ((e: MouseEvent) -> Unit)? = { calibrate() }
+    var onClick: ((e: MouseEvent?) -> Unit)? = { calibrate() }
     var onSave: ((value: KeyEvent?) -> Unit)? = null
 
     private val keyEventListener = KeyEventButtonKeyListener()
@@ -35,7 +35,7 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
         setButtonText()
     }
 
-    override fun click(e: MouseEvent) {
+    override fun click(e: MouseEvent?) {
         onClick?.invoke(e)
     }
 

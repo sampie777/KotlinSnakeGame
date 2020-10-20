@@ -28,10 +28,10 @@ class CheckBox : ClickableComponent {
             }
         }
 
-    var onClick: ((e: MouseEvent) -> Unit)? = null
+    var onClick: ((e: MouseEvent?) -> Unit)? = null
     var onChange: ((isChecked: Boolean) -> Unit)? = null
 
-    override fun click(e: MouseEvent) {
+    override fun click(e: MouseEvent?) {
         isChecked = !isChecked
         onClick?.invoke(e)
     }

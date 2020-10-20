@@ -27,7 +27,7 @@ import kotlin.random.Random
 
 class SnakePlayer(
     override var name: String = "Player",
-    color: Color = Color(0, 0, 0, 0),
+    color: Color = availableColors.first(),
     var startPosition: Point? = null
 ) : Player, MovablePlayer, KeyEventListener, ConfigEventListener {
     private val logger = Logger.getLogger(SnakePlayer::class.java.name)
@@ -37,16 +37,18 @@ class SnakePlayer(
     private var nextUpdateTime: Long = 0
     var headEntity = SnakeHead(this)
     private var bodyEntities = arrayListOf<SnakeBody>()
+
     override var score = 0
         set(value) {
             field = value
             logger.info("$name scores increases to: $value")
         }
+
     var color: Color = color
         get() {
             if (hasStarEffect()) {
                 return when (Random.nextInt(0, 6)) {
-                    0 -> Color(255, 255, 150, 255)
+                    0 -> Color(255, 255, 200, 255)
                     else -> Color(255, 255, 0, 255)
                 }
             }
@@ -62,6 +64,19 @@ class SnakePlayer(
     override var rightKey: Int = Config.player1RightKey
     override var downKey: Int = Config.player1DownKey
     override var leftKey: Int = Config.player1LeftKey
+
+    companion object {
+        val availableColors = arrayOf(
+            Color(150, 150, 150),
+            Color(255, 255, 255),
+            Color(0, 255, 0),
+            Color(255, 150, 0),
+            Color(255, 0, 0),
+            Color(255, 0, 200),
+            Color(63, 63, 255),
+            Color(0, 204, 255),
+        )
+    }
 
     init {
         EventHub.register(this)

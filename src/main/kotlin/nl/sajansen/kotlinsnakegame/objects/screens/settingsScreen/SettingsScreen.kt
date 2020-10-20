@@ -6,6 +6,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.screens.Screen
+import nl.sajansen.kotlinsnakegame.objects.screens.backButton
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.CheckBox
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
@@ -23,7 +24,7 @@ object SettingsScreen : Screen() {
         rebuildGui()
     }
 
-    private fun rebuildGui() {
+    fun rebuildGui() {
         components.clear()
         initGui()
     }
@@ -47,13 +48,7 @@ object SettingsScreen : Screen() {
         }
         components.add(checkbox)
 
-        val backButton = Button("Back")
-        backButton.backgroundColor = null
-        backButton.position = Point(10, 10)
-        backButton.onClick = {
-            close()
-        }
-        components.add(backButton)
+        components.add(backButton())
 
         addPlayerSettingsRows(Point(150, 220))
     }

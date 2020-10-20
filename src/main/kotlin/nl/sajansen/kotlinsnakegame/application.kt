@@ -6,7 +6,6 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import nl.sajansen.kotlinsnakegame.objects.screens.StartScreen
-import java.awt.Color
 import java.awt.EventQueue
 import java.util.logging.Logger
 
@@ -16,10 +15,10 @@ fun main(args: Array<String>) {
     logger.info("Starting application ${ApplicationInfo.artifactId}:${ApplicationInfo.version}")
     logger.info("Executing JAR directory: " + getCurrentJarDirectory(ApplicationInfo).absolutePath)
 
-    StartScreen.show()
-
     EventQueue.invokeLater {
-        MainFrame.createAndShow()
+        MainFrame.create()
+        StartScreen.show()
+        MainFrame.show()
     }
 
     val player = HumanPlayer()
@@ -27,7 +26,7 @@ fun main(args: Array<String>) {
 
     val player2 = SnakePlayer(
         name = "Player 2",
-        color = Color(0, 0, 255, 100),
+        color = SnakePlayer.availableColors[6],
     )
     player2.setControls(
         up = Config.player2UpKey,

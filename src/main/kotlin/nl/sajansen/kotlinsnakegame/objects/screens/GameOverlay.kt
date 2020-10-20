@@ -1,12 +1,14 @@
 package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.createKeyEvent
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.gui.utils.drawImageInXCenter
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Button
 import nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen.SettingsScreen
 import java.awt.*
+import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
@@ -112,6 +114,7 @@ object GameOverlay : Screen() {
             settingsButton.font = Font("Dialog", Font.PLAIN, 16)
             settingsButton.lineWidth = 1F
             settingsButton.margin = Dimension(5, 5)
+            settingsButton.hotKey = createKeyEvent(KeyEvent.VK_S, ctrl = true)
             settingsButton.onClick = {
                 logger.info("Settings button clicked")
                 Game.pause()

@@ -16,8 +16,12 @@ class MainFrame : JFrame() {
 
         fun createAndShow(): MainFrame {
             val frame = create()
-            frame.isVisible = true
+            show()
             return frame
+        }
+
+        fun show() {
+            getInstance()?.isVisible = true
         }
     }
 

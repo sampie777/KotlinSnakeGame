@@ -82,7 +82,19 @@ fun getFileExtension(file: File): String {
 fun Date.format(format: String): String? = SimpleDateFormat(format).format(this)
 
 
-fun createKeyEvent(keyCode: Int) = KeyEvent(MainFrame.getInstance()!!, 0, 0, 0, keyCode, '0')
+fun createKeyEvent(keyCode: Int, ctrl: Boolean = false, shift: Boolean = false, alt: Boolean = false): KeyEvent {
+    var modifiers = 0
+    if (ctrl) {
+        modifiers = modifiers.or(KeyEvent.CTRL_MASK)
+    }
+    if (shift) {
+        modifiers = modifiers.or(KeyEvent.SHIFT_MASK)
+    }
+    if (alt) {
+        modifiers = modifiers.or(KeyEvent.ALT_MASK)
+    }
+    return KeyEvent(MainFrame.getInstance()!!, 0, 0, modifiers, keyCode, '0')
+}
 
 
 fun keyEventToString(e: KeyEvent?): String {
