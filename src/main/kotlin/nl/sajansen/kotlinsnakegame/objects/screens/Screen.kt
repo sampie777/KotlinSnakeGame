@@ -31,16 +31,18 @@ abstract class Screen : MouseEventListener {
     open fun paint(g: Graphics2D) {
         paintBackground(g, backgroundOpacity)
 
-        components.forEach {
-            if (it.componentAlignmentX == ComponentAlignment.CENTER) {
-                it.position.x = (Game.board.windowSize.width - it.size.width) / 2
-            }
-            if (it.componentAlignmentY == ComponentAlignment.CENTER) {
-                it.position.y = (Game.board.windowSize.height - it.size.height) / 2
-            }
+        components
+            .filter { it.isVisible }
+            .forEach {
+                if (it.componentAlignmentX == ComponentAlignment.CENTER) {
+                    it.position.x = (Game.board.windowSize.width - it.size.width) / 2
+                }
+                if (it.componentAlignmentY == ComponentAlignment.CENTER) {
+                    it.position.y = (Game.board.windowSize.height - it.size.height) / 2
+                }
 
-            g.drawImage(it.paint(), null, it.position.x, it.position.y)
-        }
+                g.drawImage(it.paint(), null, it.position.x, it.position.y)
+            }
     }
 
     override fun mouseClicked(e: MouseEvent) {

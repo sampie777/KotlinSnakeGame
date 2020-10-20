@@ -18,6 +18,7 @@ open class Label(open var text: String = "") : DrawableComponent {
     open var textAlignmentX = ComponentAlignment.LEFT
     override var componentAlignmentX = ComponentAlignment.LEFT
     override var componentAlignmentY = ComponentAlignment.TOP
+    override var isVisible = true
 
     override fun paint(): BufferedImage {
         if (size == Dimension(0, 0)) {

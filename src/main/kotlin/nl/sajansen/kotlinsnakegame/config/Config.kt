@@ -19,6 +19,7 @@ object Config {
     // Game
     var stepPerSeconds: Long = 25
     var playerWarpsThroughWalls = true
+    var maxPlayers = 6
 
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
     var snakeStepInterval = 13

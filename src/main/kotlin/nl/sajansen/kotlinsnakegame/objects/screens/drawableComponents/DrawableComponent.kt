@@ -9,6 +9,7 @@ interface DrawableComponent {
     var size: Dimension
     var componentAlignmentX: ComponentAlignment
     var componentAlignmentY: ComponentAlignment
+    var isVisible: Boolean
 
     fun paint(): BufferedImage
 }

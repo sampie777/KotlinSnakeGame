@@ -15,6 +15,7 @@ class CheckBox : ClickableComponent {
     override var size: Dimension = Dimension(42, 42)
     override var componentAlignmentX = ComponentAlignment.LEFT
     override var componentAlignmentY = ComponentAlignment.TOP
+    override var isVisible = true
     var cornerRounding = Dimension(30, 10)
     var lineWidth = 2F
     var fontColor = Color.WHITE

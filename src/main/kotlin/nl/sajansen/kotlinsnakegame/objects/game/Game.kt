@@ -86,6 +86,13 @@ object Game : KeyEventListener {
 
     fun addPlayer(player: Player): Player {
         logger.info("Adding new player: $player")
+
+        val originalName = player.name
+        var nameIndex = 1
+        while (players.find { it.name == player.name } != null) {
+            logger.info("Renaming new player name, because the name '${player.name}' already exists")
+            player.name = "$originalName ${nameIndex++}"
+        }
         players.add(player)
         return player
     }

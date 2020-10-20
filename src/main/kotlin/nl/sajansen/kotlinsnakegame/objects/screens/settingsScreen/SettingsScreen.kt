@@ -20,6 +20,8 @@ import java.util.logging.Logger
 object SettingsScreen : Screen() {
     private val logger = Logger.getLogger(SettingsScreen::class.java.name)
 
+    private val addPlayerButton = Button("Add player")
+
     init {
         rebuildGui()
     }
@@ -56,18 +58,18 @@ object SettingsScreen : Screen() {
     private fun addPlayerSettingsRows(position: Point) {
         val rowVerticalMargin = 50
 
-        Game.players.forEachIndexed { index, player ->
+        Game.players.sortedBy { it.name }
+            .forEachIndexed { index, player ->
             playerSettingsRow(
                 Point(position.x, position.y + index * rowVerticalMargin),
                 player
             )
         }
 
-
-        val playerSettingsButton = Button("Add player")
-        playerSettingsButton.position = Point(position.x, position.y + Game.players.size * rowVerticalMargin)
-        playerSettingsButton.onClick = { addPlayer() }
-        components.add(playerSettingsButton)
+        checkForGamePlayerCapacityForAddPlayerButton()
+        addPlayerButton.position = Point(position.x, position.y + Game.players.size * rowVerticalMargin)
+        addPlayerButton.onClick = { addPlayer() }
+        components.add(addPlayerButton)
     }
 
     private fun playerSettingsRow(position: Point, player: Player) {
@@ -101,7 +103,23 @@ object SettingsScreen : Screen() {
     }
 
     private fun addPlayer() {
+        if (Game.players.size >= Config.maxPlayers) {
+            logger.info("Cannot add player. Max players reached")
+            addPlayerButton.isVisible = false
+            return
+        }
+
         Game.addPlayer(HumanPlayer())
         rebuildGui()
+    }
+
+    private fun checkForGamePlayerCapacityForAddPlayerButton() {
+        if (Game.players.size < Config.maxPlayers) {
+            addPlayerButton.isVisible = true
+            return
+        }
+
+        logger.info("Cannot add player. Max players reached")
+        addPlayerButton.isVisible = false
     }
 }
