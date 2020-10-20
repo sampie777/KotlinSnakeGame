@@ -28,6 +28,7 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
     var onSave: ((value: KeyEvent?) -> Unit)? = null
 
     private val keyEventListener = KeyEventButtonKeyListener()
+    private var isCalibrating: Boolean = false
 
     constructor(keyCode: Int) : this(createKeyEvent(keyCode))
 
@@ -85,6 +86,12 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
     }
 
     private fun calibrate() {
+        if (keyEventListener.isCalibrating) {
+            keyEventListener.cancelCalibration()
+            setButtonText()
+            return
+        }
+
         // Clear key
         if (allowEmpty && keyEvent != null) {
             keyEvent = null
@@ -97,9 +104,14 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
         keyEventListener.startCalibration { keyEvent ->
             logger.info("Calibrated key event: ${keyEventToString(keyEvent)}")
 
-            this.keyEvent = keyEvent
+            if (keyEvent.keyCode == KeyEvent.VK_ESCAPE) {
+                logger.info("Ignoring Escape key for calibration")
+            } else {
+                this.keyEvent = keyEvent
+                onSave?.invoke(keyEvent)
+            }
+
             setButtonText()
-            onSave?.invoke(keyEvent)
         }
     }
 
@@ -111,7 +123,7 @@ class KeyMappingButton(private var keyEvent: KeyEvent? = null) : ClickableCompon
 private class KeyEventButtonKeyListener : KeyEventListener {
     private val logger = Logger.getLogger(KeyEventButtonKeyListener::class.java.name)
 
-    private var isCalibrating: Boolean = false
+    var isCalibrating: Boolean = false
     private var calibrationCallback : ((KeyEvent) -> Unit)? = null
 
     override fun keyReleased(e: KeyEvent) {
@@ -138,5 +150,11 @@ private class KeyEventButtonKeyListener : KeyEventListener {
     fun startCalibration(callback: (keyEvent: KeyEvent) -> Unit) {
         calibrationCallback = callback
         isCalibrating = true
+    }
+
+    fun cancelCalibration() {
+        logger.info("Cancelling calibration")
+        calibrationCallback = null
+        isCalibrating = false
     }
 }
