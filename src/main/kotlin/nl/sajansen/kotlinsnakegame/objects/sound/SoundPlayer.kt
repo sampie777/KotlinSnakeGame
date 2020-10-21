@@ -17,14 +17,20 @@ object SoundPlayer {
     }
 
     private fun getClip(sound: Sounds): Clip? {
-        val file = File(ApplicationInfo::class.java.classLoader.getResource(sound.path)!!.file)
-        logger.info("Playing sound: ${file.absolutePath}")
-
-        if (!file.exists()) {
-            logger.warning("Sound file not found: ${file.absolutePath}")
+        val file = try {
+            File(ApplicationInfo::class.java.classLoader.getResource(sound.path)!!.file)
+        } catch (e: Exception) {
+            logger.severe("Could not find sound file: ${sound.path}")
+            e.printStackTrace()
             return null
         }
 
+        if (!file.exists()) {
+            logger.warning("Sound file does not exists: ${file.absolutePath}")
+            return null
+        }
+
+        logger.info("Playing sound: ${file.absolutePath}")
         try {
             val inputStream: AudioInputStream = AudioSystem.getAudioInputStream(file)
             val dataLineInfo = DataLine.Info(Clip::class.java, inputStream.format)

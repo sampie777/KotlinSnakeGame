@@ -108,6 +108,7 @@ class HumanPlayer(
     }
 
     override fun step() {
+        super.step()
         previousPosition = position.clone() as Point
 
         moveToNewPosition()

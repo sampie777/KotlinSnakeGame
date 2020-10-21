@@ -1,6 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents
 
 
+import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.objects.game.Game
@@ -150,7 +151,7 @@ class TextField(override var text: String = "") : FocusListener, Label(text), Ke
     private fun paintCursor(g: Graphics2D) {
         if (!isActivate) return
 
-        if (++cursorBlinkTimeCounter > 15) {
+        if (++cursorBlinkTimeCounter > Config.maxFps / 2) {
             isCursorLit = !isCursorLit
             cursorBlinkTimeCounter = 0
         }
