@@ -67,7 +67,7 @@ class SnakePlayer(
 
     companion object {
         val availableColors = arrayOf(
-            Color(150, 150, 150),
+            Color(189, 189, 189),
             Color(255, 255, 255),
             Color(0, 255, 0),
             Color(255, 150, 0),

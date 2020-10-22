@@ -29,7 +29,7 @@ class Button(override var text: String = "") : ClickableComponent, Label(text), 
     }
 
     override fun paint(): BufferedImage {
-        if (size == Dimension(0, 0)) {
+        if (size.width == 0 || size.height == 0) {
             calculateSize()
         }
 

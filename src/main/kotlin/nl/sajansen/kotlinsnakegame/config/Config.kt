@@ -46,7 +46,7 @@ object Config {
     var snakeBoostKey = KeyEvent.VK_SPACE
 
     // String
-    var pressKeyToStartMessage = "Press key to start".toUpperCase()
+    var titleMessage = "Snake renewed".toUpperCase()
     var gameOverMessage = "Game over".toUpperCase()
     var gamePausedMessage = "Paused".toUpperCase()
 

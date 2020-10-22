@@ -36,11 +36,11 @@ object SettingsScreen : Screen() {
         titleLabel.position = Point(0, 50)
         titleLabel.componentAlignmentX = ComponentAlignment.CENTER
         titleLabel.font = Font("Dialog", Font.BOLD, 32)
-        components.add(titleLabel)
+        add(titleLabel)
 
         val nameLabel = Label("Steer Snake using left/right only")
         nameLabel.position = Point(150, 150)
-        components.add(nameLabel)
+        add(nameLabel)
 
         val checkbox = CheckBox()
         checkbox.position = Point(600, 147)
@@ -48,9 +48,9 @@ object SettingsScreen : Screen() {
         checkbox.onChange = { value ->
             Config.snakeOnlyLeftRightControls = value
         }
-        components.add(checkbox)
+        add(checkbox)
 
-        components.add(backButton())
+        add(backButton())
 
         addPlayerSettingsRows(Point(150, 220))
     }
@@ -69,26 +69,26 @@ object SettingsScreen : Screen() {
         checkForGamePlayerCapacityForAddPlayerButton()
         addPlayerButton.position = Point(position.x, position.y + Game.players.size * rowVerticalMargin)
         addPlayerButton.onClick = { addPlayer() }
-        components.add(addPlayerButton)
+        add(addPlayerButton)
     }
 
     private fun playerSettingsRow(position: Point, player: Player) {
         val nameLabel = Label(player.name)
         nameLabel.position = position
         nameLabel.font = Font("Dialog", Font.ITALIC, 20)
-        components.add(nameLabel)
+        add(nameLabel)
 
         val playerSettingsButton = Button("Settings")
         playerSettingsButton.position = Point(position.x + 300, position.y)
         playerSettingsButton.onClick = { showSettingsForPlayer(player) }
-        components.add(playerSettingsButton)
+        add(playerSettingsButton)
 
         val playerRemoveButton = Button("X")
         playerRemoveButton.position = Point(position.x + 500, position.y)
         playerRemoveButton.margin = Dimension(10, 10)
         playerRemoveButton.backgroundColor = Color(168, 66, 66)
         playerRemoveButton.onClick = { removePlayer(player) }
-        components.add(playerRemoveButton)
+        add(playerRemoveButton)
     }
 
     private fun showSettingsForPlayer(player: Player) {

@@ -2,9 +2,6 @@ package nl.sajansen.kotlinsnakegame
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.mainFrame.MainFrame
-import nl.sajansen.kotlinsnakegame.objects.game.Game
-import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
-import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import nl.sajansen.kotlinsnakegame.objects.screens.StartScreen
 import java.awt.EventQueue
 import java.util.logging.Logger
@@ -26,21 +23,4 @@ fun main(args: Array<String>) {
         StartScreen.show()
         MainFrame.show()
     }
-
-    val player = HumanPlayer()
-//    val player = SnakePlayer()
-
-    val player2 = SnakePlayer(
-        name = "Player 2",
-        color = SnakePlayer.availableColors[6],
-    )
-    player2.setControls(
-        up = Config.player2UpKey,
-        right = Config.player2RightKey,
-        down = Config.player2DownKey,
-        left = Config.player2LeftKey
-    )
-
-    Game.addPlayer(player)
-    Game.addPlayer(player2)
 }

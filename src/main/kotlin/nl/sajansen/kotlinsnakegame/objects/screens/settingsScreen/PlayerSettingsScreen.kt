@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame.objects.screens.settingsScreen
 
 
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.getAvailableColorForSnake
 import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
 import nl.sajansen.kotlinsnakegame.objects.player.MovablePlayer
 import nl.sajansen.kotlinsnakegame.objects.player.Player
@@ -26,14 +27,14 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         titleLabel.position = Point(0, 50)
         titleLabel.componentAlignmentX = ComponentAlignment.CENTER
         titleLabel.font = Font("Dialog", Font.BOLD, 32)
-        components.add(titleLabel)
+        add(titleLabel)
 
         val backButton = backButton()
         backButton.onClick = {
             close()
             SettingsScreen.rebuildGui()
         }
-        components.add(backButton)
+        add(backButton)
 
         addNameTextField(Point(150, 150))
 
@@ -51,7 +52,7 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
     private fun addNameTextField(position: Point) {
         val label = Label("Name")
         label.position = position
-        components.add(label)
+        add(label)
 
         val textField = TextField(player.name)
         textField.position = Point(position.x + 300, position.y)
@@ -68,7 +69,7 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
 
         val label = Label("Color")
         label.position = position
-        components.add(label)
+        add(label)
 
         val button = Button()
         button.backgroundColor = player.color
@@ -77,7 +78,7 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
             player.color = getNextSnakePlayerColor(player)
             button.backgroundColor = player.color
         }
-        components.add(button)
+        add(button)
     }
 
     private fun getNextSnakePlayerColor(player: SnakePlayer): Color {
@@ -91,7 +92,7 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
     private fun addSwitchTypeButton(position: Point) {
         val label = Label("Type")
         label.position = position
-        components.add(label)
+        add(label)
 
         val button = Button(player::class.java.simpleName)
         button.backgroundColor = null
@@ -105,30 +106,18 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
 
             button.text = player::class.java.simpleName
         }
-        components.add(button)
+        add(button)
     }
 
     private fun switchPlayerToSnakePlayer() {
-        val newPlayer = SnakePlayer()
-        copyPropertiesToNewPlayer(player, newPlayer)
+        val newPlayer = player.changeTo(SnakePlayer::class.java)
+        getAvailableColorForSnake(newPlayer)
         replacePlayer(player, newPlayer)
     }
 
     private fun switchPlayerToHumanPlayer() {
-        val newPlayer = HumanPlayer()
-        copyPropertiesToNewPlayer(player, newPlayer)
+        val newPlayer = player.changeTo(HumanPlayer::class.java)
         replacePlayer(player, newPlayer)
-    }
-
-    private fun copyPropertiesToNewPlayer(oldPlayer: Player, newPlayer: Player) {
-        newPlayer.name = oldPlayer.name
-
-        if (oldPlayer is MovablePlayer && newPlayer is MovablePlayer) {
-            newPlayer.upKey = oldPlayer.upKey
-            newPlayer.rightKey = oldPlayer.rightKey
-            newPlayer.downKey = oldPlayer.downKey
-            newPlayer.leftKey = oldPlayer.leftKey
-        }
     }
 
     private fun replacePlayer(oldPlayer: Player, newPlayer: Player) {
@@ -156,27 +145,27 @@ class PlayerSettingsScreen(private val player: Player) : Screen() {
         upKeyButton.size = size
         upKeyButton.allowEmpty = false
         upKeyButton.onSave = { player.upKey = it!!.keyCode }
-        components.add(upKeyButton)
+        add(upKeyButton)
 
         val leftKeyButton = KeyMappingButton(player.leftKey)
         leftKeyButton.position = Point(position.x + 0, position.y + verticalSpacing)
         leftKeyButton.size = size
         leftKeyButton.allowEmpty = false
         leftKeyButton.onSave = { player.leftKey = it!!.keyCode }
-        components.add(leftKeyButton)
+        add(leftKeyButton)
 
         val downKeyButton = KeyMappingButton(player.downKey)
         downKeyButton.position = Point(position.x + horizontalSpacing, position.y + verticalSpacing)
         downKeyButton.size = size
         downKeyButton.allowEmpty = false
         downKeyButton.onSave = { player.downKey = it!!.keyCode }
-        components.add(downKeyButton)
+        add(downKeyButton)
 
         val rightKeyButton = KeyMappingButton(player.rightKey)
         rightKeyButton.position = Point(position.x + 2 * horizontalSpacing, position.y + verticalSpacing)
         rightKeyButton.size = size
         rightKeyButton.allowEmpty = false
         rightKeyButton.onSave = { player.rightKey = it!!.keyCode }
-        components.add(rightKeyButton)
+        add(rightKeyButton)
     }
 }

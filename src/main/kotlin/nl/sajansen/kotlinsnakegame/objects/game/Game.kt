@@ -99,14 +99,20 @@ object Game : KeyEventListener {
 
     fun end(reason: String, sound: Sounds? = Sounds.GAME_END) {
         logger.info("Game ended: $reason")
+        stop()
+
         deathMessage = reason
-        state.runningState = GameRunningState.ENDED
         if (sound != null) {
             SoundPlayer.play(sound)
         }
 
-        GameStepTimer.stop()
         GameOverScreen.show()
+    }
+
+    fun stop() {
+        logger.info("Stopping game")
+        state.runningState = GameRunningState.ENDED
+        GameStepTimer.stop()
     }
 
     fun reset() {

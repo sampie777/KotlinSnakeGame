@@ -58,7 +58,12 @@ open class Label(open var text: String = "") : DrawableComponent {
         val textWidth = g.fontMetrics.stringWidth(text)
         val textHeight = g.fontMetrics.height
 
-        size = Dimension(textWidth + 2 * margin.width, textHeight + 2 * margin.height)
+        if (size.width == 0) {
+            size.width = textWidth + 2 * margin.width
+        }
+        if (size.height == 0) {
+            size.height = textHeight + 2 * margin.height
+        }
 
         if (componentAlignmentX == ComponentAlignment.CENTER) {
             position.x = (Game.board.windowSize.width - size.width) / 2

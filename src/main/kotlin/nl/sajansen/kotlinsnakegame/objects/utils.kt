@@ -3,6 +3,7 @@ package nl.sajansen.kotlinsnakegame.objects
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Dimension
@@ -72,4 +73,12 @@ fun adjustPositionForWall(position: Point, size: Dimension, sizeMarginFactor: Do
     } else if (position.y + (size.height - heightMargin) > Game.board.size.height) {
         position.y = -heightMargin
     }
+}
+
+fun getAvailableColorForSnake(player: SnakePlayer) {
+    val availableColors = SnakePlayer.availableColors
+        .filterNot { color ->
+            Game.players.any { it != player && it is SnakePlayer && it.color == color }
+        }
+    player.color = availableColors.firstOrNull() ?: SnakePlayer.availableColors.first()
 }
