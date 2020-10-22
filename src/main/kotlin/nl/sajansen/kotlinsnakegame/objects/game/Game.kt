@@ -101,6 +101,10 @@ object Game : KeyEventListener {
         logger.info("Game ended: $reason")
         stop()
 
+        players.forEach {
+            HighScores.checkAndSetHighScore(it)
+        }
+
         deathMessage = reason
         if (sound != null) {
             SoundPlayer.play(sound)

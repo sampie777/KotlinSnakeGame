@@ -3,6 +3,7 @@ package nl.sajansen.kotlinsnakegame.objects.screens
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.objects.game.Game
+import nl.sajansen.kotlinsnakegame.objects.game.HighScores
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.ComponentAlignment
 import nl.sajansen.kotlinsnakegame.objects.screens.drawableComponents.Label
@@ -75,9 +76,14 @@ object GameOverScreen : Screen() {
 
         val scoreLabel = Label(player.score.toString())
         scoreLabel.position = Point(position.x + 250, position.y)
-        scoreLabel.font = Font("Dialog", Font.BOLD, 24)
         scoreLabel.fontColor = Color(217, 217, 217)
         components.add(scoreLabel)
+
+        if (player.score > 0 && HighScores.getHighScore(player) == player.score) {
+            scoreLabel.font = Font("Dialog", Font.BOLD, 24)
+        } else {
+            scoreLabel.font = Font("Dialog", Font.PLAIN, 24)
+        }
     }
 
     override fun show(index: Int?) {

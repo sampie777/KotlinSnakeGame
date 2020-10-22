@@ -3,6 +3,7 @@ package gui.config
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.gui.config.formcomponents.*
+import nl.sajansen.kotlinsnakegame.objects.game.HighScores
 import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.util.logging.Logger
@@ -104,6 +105,18 @@ class ConfigEditPanel : JPanel() {
                 max = Int.MAX_VALUE
             )
         )
+
+        formComponents.add(
+            BooleanFormInput(
+                "",
+                "Reset high scores",
+                onSave = {
+                    if (it) {
+                        HighScores.clearHighScores()
+                    }
+                    false
+                })
+        )
     }
 
     private fun createGui() {
@@ -173,6 +186,11 @@ class ConfigEditPanel : JPanel() {
         }
 
         formInputComponents.forEach {
+            if (it.key.isBlank()) {
+                it.save()
+                return@forEach
+            }
+
             val oldValue = Config.get(it.key)
             it.save()
             val newValue = Config.get(it.key)

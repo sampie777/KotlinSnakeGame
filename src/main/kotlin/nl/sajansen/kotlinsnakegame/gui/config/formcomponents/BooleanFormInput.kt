@@ -14,14 +14,15 @@ import javax.swing.SwingConstants
 class BooleanFormInput(
     override val key: String,
     private val labelText: String,
-    private val toolTipText: String = ""
+    private val toolTipText: String = "",
+    private val onSave: ((newValue: Boolean) -> Boolean)? = null,
 ) : FormInput {
     private val logger = Logger.getLogger(BooleanFormInput::class.java.name)
 
     private val input = JCheckBox()
 
     override fun component(): Component {
-        val configValue: Boolean? = Config.get(key) as? Boolean
+        val configValue: Boolean? = if (key.isBlank()) false else Config.get(key) as? Boolean
 
         val label = JLabel("<html>${labelText.replace("\n", "<br/>&nbsp;")}</html>")
         label.font = Font(Config.fontFamily, Font.PLAIN, 12)
@@ -46,7 +47,10 @@ class BooleanFormInput(
     }
 
     override fun save() {
-        Config.set(key, value())
+        val value = onSave?.invoke(value()) ?: value()
+
+        if (key.isBlank()) return
+        Config.set(key, value)
     }
 
     override fun value(): Boolean {
