@@ -2,45 +2,82 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
+import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
+import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
+import nl.sajansen.kotlinsnakegame.multiplayer.json.getObjectFromMessage
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.logging.Logger
 
 class RemoteServer(
-    val address: InetAddress = InetAddress.getByName("localhost"),
-    val port: Int = Config.serverPort
+    address: InetAddress = InetAddress.getByName("localhost"),
+    port: Int = Config.serverPort
 ) :
     MessagingServer() {
 
     override val logger: Logger = Logger.getLogger(RemoteServer::class.java.name)
-    override val id: Int
-        get() = 1
+
+    private val remoteClient = RemoteClient(address, port)
+    private var isConnected = false
 
     init {
-        connect()
+        start()
     }
 
-    fun connect() {
+    override fun start() {
         socket = DatagramSocket()
-        isListening = socket != null && !socket!!.isClosed
+        super.start()
 
-        startListening()
+        requestConnection()
     }
 
-    fun disconnect() {
-        stop()
+    override fun stop() {
+        send(Commands.DISCONNECT)
+        super.stop()
+        isConnected = false
     }
-
-    override fun handleReceivedData(data: ByteArray, client: RemoteClient) {
-        val string = String(data)
-        logger.info("Message: $string")
-
-        when (string) {
-            "stop" -> stopListening()
-            "echo" -> send("echo1".toByteArray())
+    override fun handleReceivedCommand(message: JsonMessage, client: RemoteClient) {
+        when (message.command) {
+            Commands.OK -> finalizeConnection()
+            Commands.ECHO -> send(Commands.ECHO)
+            else -> return
         }
     }
 
-    fun send(data: String): Boolean = send(data.toByteArray())
-    fun send(data: ByteArray): Boolean = send(data, address, port)
+    override fun handleReceivedMessage(message: JsonMessage, client: RemoteClient) {}
+
+    override fun handleReceivedObject(message: JsonMessage, client: RemoteClient) {
+        val obj = getObjectFromMessage(message) ?: return
+
+        when (obj) {
+            is GameDataJson -> processGameData(obj)
+        }
+    }
+
+    private fun requestConnection() {
+        logger.info("Sending connection request")
+        send(Commands.CONNECT)
+    }
+
+    private fun finalizeConnection() {
+        logger.info("Connected to the server")
+        isConnected = true
+    }
+
+    private fun processGameData(data: GameDataJson) {
+        //..
+        sendPlayerData()
+    }
+
+    fun sendPlayerData() {
+        val data = PlayerDataJson("Henk")
+
+        sendObject(data)
+    }
+
+    fun send(command: Commands, message: String = ""): Boolean =
+        send(JsonMessage(command = command, message = message), remoteClient)
+    fun send(message: String): Boolean = send(message, remoteClient)
+    fun sendObject(obj: Any?): Boolean = sendObject(obj, remoteClient)
 }

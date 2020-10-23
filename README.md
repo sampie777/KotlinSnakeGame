@@ -21,3 +21,20 @@ Sprite images are automatically buffered when the sprite image is recalled. This
 | Parameter | Description |
 | --- | --- |
 | `--virtualConfig` | Don't save config to file |
+
+
+# Multiplayer
+
+Client-server communication is as follows:
+
+| Step | Client | Server |
+| --- | --- | --- |
+| 1 | Send "connect" |  |
+|  |  | Send "ok" |
+| 2 (Game tick) |  | Send game data to all clients |
+|  | Send player data |  |
+| 3 | Send "disconnect" |  |
+|  |  | Send "ok" |
+
+`Player data` is a JSON object with client player and state. 
+`Game data` is a JSON object with all players and states.
