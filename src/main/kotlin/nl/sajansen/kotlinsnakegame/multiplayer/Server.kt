@@ -1,9 +1,11 @@
 package nl.sajansen.kotlinsnakegame.multiplayer
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
 import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
 import nl.sajansen.kotlinsnakegame.multiplayer.json.getObjectFromMessage
+import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.net.DatagramSocket
 import java.util.logging.Logger
 
@@ -54,8 +56,17 @@ object Server : MessagingServer() {
         println("Player data name: " + data.name)
     }
 
-    private fun sendGameData(client: RemoteClient) {
-        //..
-        send("", client)
+    fun sendGameData() {
+        val players = Game.players.map {
+            PlayerDataJson(
+                name = it.name
+            )
+        }
+        val data = GameDataJson(
+            isEnded = false,
+            players = players
+        )
+
+        clients.forEach { sendObject(data, it) }
     }
 }

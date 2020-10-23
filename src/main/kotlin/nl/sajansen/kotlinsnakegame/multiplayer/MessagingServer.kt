@@ -2,9 +2,11 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
 import nl.sajansen.kotlinsnakegame.multiplayer.json.jsonBuilder
+import java.io.EOFException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -89,7 +91,18 @@ abstract class MessagingServer {
         val json = String(data)
         logger.info("Received json message: $json")
 
-        val message = Gson().fromJson(json, JsonMessage::class.java)
+        val message = try {
+            Gson().fromJson(json, JsonMessage::class.java)
+        } catch (e: EOFException) {
+            logger.severe("Increase buffer size: Config.maxDataPacketLength")
+            throw e
+        } catch (e: JsonSyntaxException) {
+            val exceptionMessage = e.message
+            if (exceptionMessage != null && exceptionMessage.contains("EOFException")) {
+                logger.severe("Increase buffer size: Config.maxDataPacketLength")
+            }
+            throw e
+        }
 
         if (message.command != null) {
             handleReceivedCommand(message, client)

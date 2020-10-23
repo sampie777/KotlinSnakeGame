@@ -19,7 +19,14 @@ class RemoteServer(
     override val logger: Logger = Logger.getLogger(RemoteServer::class.java.name)
 
     private val remoteClient = RemoteClient(address, port)
-    private var isConnected = false
+
+    enum class ConnectionState {
+        NOT_CONNECTED,
+        CONNECTING,
+        CONNECTED
+    }
+
+    private var connectionState = ConnectionState.NOT_CONNECTED
 
     init {
         start()
@@ -35,12 +42,19 @@ class RemoteServer(
     override fun stop() {
         send(Commands.DISCONNECT)
         super.stop()
-        isConnected = false
+        connectionState = ConnectionState.NOT_CONNECTED
     }
     override fun handleReceivedCommand(message: JsonMessage, client: RemoteClient) {
         when (message.command) {
-            Commands.OK -> finalizeConnection()
+            Commands.OK -> processOkCommand(message)
             Commands.ECHO -> send(Commands.ECHO)
+            else -> return
+        }
+    }
+
+    private fun processOkCommand(message: JsonMessage) {
+        when (connectionState) {
+            ConnectionState.CONNECTING -> finalizeConnection()
             else -> return
         }
     }
@@ -57,16 +71,22 @@ class RemoteServer(
 
     private fun requestConnection() {
         logger.info("Sending connection request")
+        connectionState = ConnectionState.CONNECTING
         send(Commands.CONNECT)
     }
 
     private fun finalizeConnection() {
         logger.info("Connected to the server")
-        isConnected = true
+        connectionState = ConnectionState.CONNECTED
     }
 
     private fun processGameData(data: GameDataJson) {
         //..
+        println("Game is ended: ${data.isEnded}")
+        print("Other players: ")
+        val otherPlayers = data.players.filter { it.name != "Henk" }
+        println(otherPlayers)
+
         sendPlayerData()
     }
 

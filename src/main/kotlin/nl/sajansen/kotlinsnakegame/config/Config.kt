@@ -52,7 +52,7 @@ object Config {
 
     // Multiplayer
     var serverPort = 11100
-    var maxDataPacketLength = 256
+    var maxDataPacketLength = 1024
 
     fun load() {
         try {

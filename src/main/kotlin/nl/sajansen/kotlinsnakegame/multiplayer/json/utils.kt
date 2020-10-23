@@ -6,7 +6,7 @@ import java.util.logging.Logger
 
 val logger = Logger.getLogger("utils")
 
-internal fun jsonBuilder(prettyPrint: Boolean = true): Gson {
+internal fun jsonBuilder(prettyPrint: Boolean = false): Gson {
     val builder = GsonBuilder()
         .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
         .serializeNulls()
