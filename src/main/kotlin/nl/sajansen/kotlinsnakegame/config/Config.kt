@@ -50,6 +50,10 @@ object Config {
     var gameOverMessage = "Game over".toUpperCase()
     var gamePausedMessage = "Paused".toUpperCase()
 
+    // Multiplayer
+    var serverPort = 11100
+    var maxDataPacketLength = 256
+
     fun load() {
         try {
             PropertyLoader.load()
