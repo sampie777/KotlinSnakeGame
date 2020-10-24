@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
-import nl.sajansen.kotlinsnakegame.multiplayer.json.jsonBuilder
 import java.io.EOFException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -84,11 +83,14 @@ abstract class MessagingServer {
         }
 
         logger.info("Received packet from: IP=${packet.address}, port: ${packet.port}")
-        handleReceivedData(packet.data.sliceArray((0 until packet.length)), RemoteClient(packet.address, packet.port))
+        handleReceivedData(
+            packet.data.sliceArray((0 until packet.length)),
+            RemoteClient(packet.address, packet.port)
+        )
     }
 
-    fun handleReceivedData(data: ByteArray, client: RemoteClient) {
-        val json = String(data)
+    fun handleReceivedData(bytes: ByteArray, client: RemoteClient) {
+        val json = String(bytes)
         logger.info("Received json message: $json")
 
         val message = try {
@@ -104,42 +106,30 @@ abstract class MessagingServer {
             throw e
         }
 
-        if (message.command != null) {
-            handleReceivedCommand(message, client)
-        } else if (message.obj != null && message.objClassName != null) {
-            handleReceivedObject(message, client)
-        } else if (message.message != null) {
-            handleReceivedMessage(message, client)
-        } else {
-            logger.info("Can't do anything with an empty json message")
+        val data = getObjectFromMessage(message) ?: return
+
+        when (data) {
+            is Commands -> handleReceivedCommand(data, client)
+            is String -> handleReceivedMessage(data, client)
+            else -> handleReceivedObject(data, client)
         }
     }
 
-    abstract fun handleReceivedCommand(message: JsonMessage, client: RemoteClient)
-    abstract fun handleReceivedMessage(message: JsonMessage, client: RemoteClient)
-    abstract fun handleReceivedObject(message: JsonMessage, client: RemoteClient)
-
-    fun sendRaw(data: String, client: RemoteClient): Boolean = send(data.toByteArray(), client)
-
-    fun sendObject(obj: Any?, client: RemoteClient): Boolean {
-        val jsonMessage = if (obj == null) {
-            JsonMessage(obj = null)
-        } else {
-            JsonMessage(obj = obj, objClassName = obj::class.java.name)
-        }
-        return send(jsonMessage, client)
-    }
-
-    fun send(command: Commands, client: RemoteClient, message: String = ""): Boolean =
-        send(JsonMessage(command = command, message = message), client)
-
-    fun send(message: String, client: RemoteClient): Boolean = send(JsonMessage(message = message), client)
-    fun send(data: ByteArray, client: RemoteClient): Boolean = send(data, client.address, client.port)
+    abstract fun handleReceivedCommand(command: Commands, client: RemoteClient)
+    abstract fun handleReceivedMessage(message: String, client: RemoteClient)
+    abstract fun handleReceivedObject(data: Any, client: RemoteClient)
 
     fun send(message: JsonMessage, client: RemoteClient): Boolean {
         val json = jsonBuilder().toJson(message)
         return sendRaw(json, client)
     }
+
+    fun send(obj: Any, client: RemoteClient): Boolean =
+        send(JsonMessage(data = obj, dataClass = obj::class.java.name), client)
+
+    fun sendRaw(data: String, client: RemoteClient): Boolean = send(data.toByteArray(), client)
+
+    fun send(data: ByteArray, client: RemoteClient): Boolean = send(data, client.address, client.port)
 
     fun send(data: ByteArray, address: InetAddress, port: Int): Boolean {
         if (!isListening || socket == null || socket!!.isClosed) {

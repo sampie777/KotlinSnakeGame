@@ -1,7 +1,8 @@
-package nl.sajansen.kotlinsnakegame.multiplayer.json
+package nl.sajansen.kotlinsnakegame.multiplayer
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
 import java.util.logging.Logger
 
 val logger = Logger.getLogger("utils")
@@ -19,17 +20,17 @@ internal fun jsonBuilder(prettyPrint: Boolean = false): Gson {
 }
 
 fun getObjectFromMessage(message: JsonMessage): Any? {
-    if (message.obj == null) {
+    if (message.data == null) {
         logger.info("Message object is null, cannot do something with this")
         return null
     }
 
-    if (message.objClassName == null || message.objClassName.isEmpty()) {
+    if (message.dataClass.isEmpty()) {
         logger.info("Message object has no class name specified, cannot do something with this")
         return null
     }
 
-    val objectClass = Class.forName(message.objClassName)
-    val objString = jsonBuilder().toJson(message.obj)
+    val objectClass = Class.forName(message.dataClass)
+    val objString = jsonBuilder().toJson(message.data)
     return Gson().fromJson(objString, objectClass)
 }

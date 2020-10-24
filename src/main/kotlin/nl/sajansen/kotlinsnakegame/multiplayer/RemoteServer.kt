@@ -3,9 +3,7 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
-import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
-import nl.sajansen.kotlinsnakegame.multiplayer.json.getObjectFromMessage
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.logging.Logger
@@ -44,28 +42,27 @@ class RemoteServer(
         super.stop()
         connectionState = ConnectionState.NOT_CONNECTED
     }
-    override fun handleReceivedCommand(message: JsonMessage, client: RemoteClient) {
-        when (message.command) {
-            Commands.OK -> processOkCommand(message)
+
+    override fun handleReceivedCommand(command: Commands, client: RemoteClient) {
+        when (command) {
+            Commands.OK -> processOkCommand()
             Commands.ECHO -> send(Commands.ECHO)
             else -> return
         }
     }
 
-    private fun processOkCommand(message: JsonMessage) {
+    private fun processOkCommand() {
         when (connectionState) {
             ConnectionState.CONNECTING -> finalizeConnection()
             else -> return
         }
     }
 
-    override fun handleReceivedMessage(message: JsonMessage, client: RemoteClient) {}
+    override fun handleReceivedMessage(message: String, client: RemoteClient) {}
 
-    override fun handleReceivedObject(message: JsonMessage, client: RemoteClient) {
-        val obj = getObjectFromMessage(message) ?: return
-
-        when (obj) {
-            is GameDataJson -> processGameData(obj)
+    override fun handleReceivedObject(data: Any, client: RemoteClient) {
+        when (data) {
+            is GameDataJson -> processGameData(data)
         }
     }
 
@@ -83,9 +80,8 @@ class RemoteServer(
     private fun processGameData(data: GameDataJson) {
         //..
         println("Game is ended: ${data.isEnded}")
-        print("Other players: ")
-        val otherPlayers = data.players.filter { it.name != "Henk" }
-        println(otherPlayers)
+        print("Players: ")
+        println(data.players)
 
         sendPlayerData()
     }
@@ -93,11 +89,8 @@ class RemoteServer(
     fun sendPlayerData() {
         val data = PlayerDataJson("Henk")
 
-        sendObject(data)
+        send(data)
     }
 
-    fun send(command: Commands, message: String = ""): Boolean =
-        send(JsonMessage(command = command, message = message), remoteClient)
-    fun send(message: String): Boolean = send(message, remoteClient)
-    fun sendObject(obj: Any?): Boolean = sendObject(obj, remoteClient)
+    private fun send(obj: Any): Boolean = send(obj, remoteClient)
 }

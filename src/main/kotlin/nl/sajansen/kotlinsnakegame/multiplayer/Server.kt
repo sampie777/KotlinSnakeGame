@@ -2,9 +2,7 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
-import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
-import nl.sajansen.kotlinsnakegame.multiplayer.json.getObjectFromMessage
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.net.DatagramSocket
 import java.util.logging.Logger
@@ -21,8 +19,8 @@ object Server : MessagingServer() {
         super.start()
     }
 
-    override fun handleReceivedCommand(message: JsonMessage, client: RemoteClient) {
-        when (message.command) {
+    override fun handleReceivedCommand(command: Commands, client: RemoteClient) {
+        when (command) {
             Commands.CONNECT -> addClient(client)
             Commands.DISCONNECT -> removeClient(client)
             Commands.ECHO -> send(Commands.ECHO, client)
@@ -30,13 +28,11 @@ object Server : MessagingServer() {
         }
     }
 
-    override fun handleReceivedMessage(message: JsonMessage, client: RemoteClient) {}
+    override fun handleReceivedMessage(message: String, client: RemoteClient) {}
 
-    override fun handleReceivedObject(message: JsonMessage, client: RemoteClient) {
-        val obj = getObjectFromMessage(message) ?: return
-
-        when (obj) {
-            is PlayerDataJson -> processPlayerData(obj, client)
+    override fun handleReceivedObject(data: Any, client: RemoteClient) {
+        when (data) {
+            is PlayerDataJson -> processPlayerData(data, client)
         }
     }
 
@@ -67,6 +63,6 @@ object Server : MessagingServer() {
             players = players
         )
 
-        clients.forEach { sendObject(data, it) }
+        clients.forEach { send(data, it) }
     }
 }
