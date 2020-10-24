@@ -83,8 +83,6 @@ class RemoteServer(
         println("Game is ended: ${data.isEnded}")
         print("Players: ")
         println(getPlayersFromData(data))
-
-        sendPlayerData()
     }
 
     private fun getPlayersFromData(data: GameDataJson): List<Player> {

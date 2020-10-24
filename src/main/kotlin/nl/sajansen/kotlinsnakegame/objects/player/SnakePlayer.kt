@@ -349,6 +349,7 @@ class SnakePlayer(
             name = name,
             position = headEntity.position,
             direction = direction,
+            color = color,
         )
     }
 
@@ -356,6 +357,7 @@ class SnakePlayer(
         name = data.name
         headEntity.position = data.position
         direction = data.direction
+        color = color
         return this
     }
 }
