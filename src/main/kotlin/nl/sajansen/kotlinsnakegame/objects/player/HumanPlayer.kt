@@ -4,6 +4,7 @@ package nl.sajansen.kotlinsnakegame.objects.player
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
+import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
@@ -177,6 +178,22 @@ class HumanPlayer(
     }
 
     override fun toString(): String {
-        return "HumanPlayer(name=$name, score=$score)"
+        return "HumanPlayer(name=$name, score=$score, position=$position)"
+    }
+
+    override fun toPlayerDataJson(): PlayerDataJson {
+        return PlayerDataJson(
+            className = this::class.java.name,
+            name = name,
+            position = position,
+            direction = direction,
+        )
+    }
+
+    override fun fromPlayerDataJson(data: PlayerDataJson): Player {
+        name = data.name
+        position = data.position
+        direction = data.direction
+        return this
     }
 }

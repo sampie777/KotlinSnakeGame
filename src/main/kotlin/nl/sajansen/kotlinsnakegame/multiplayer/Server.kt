@@ -53,11 +53,7 @@ object Server : MessagingServer() {
     }
 
     fun sendGameData() {
-        val players = Game.players.map {
-            PlayerDataJson(
-                name = it.name
-            )
-        }
+        val players = Game.players.map { it.toPlayerDataJson() }
         val data = GameDataJson(
             isEnded = false,
             players = players

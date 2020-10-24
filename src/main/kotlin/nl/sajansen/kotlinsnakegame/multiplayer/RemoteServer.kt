@@ -3,7 +3,8 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
-import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
+import nl.sajansen.kotlinsnakegame.objects.player.HumanPlayer
+import nl.sajansen.kotlinsnakegame.objects.player.Player
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.logging.Logger
@@ -81,13 +82,22 @@ class RemoteServer(
         //..
         println("Game is ended: ${data.isEnded}")
         print("Players: ")
-        println(data.players)
+        println(getPlayersFromData(data))
 
         sendPlayerData()
     }
 
+    private fun getPlayersFromData(data: GameDataJson): List<Player> {
+        return data.players
+            .map {
+                val objectClass = Class.forName(it.className)
+                val instance = objectClass.newInstance() as Player
+                instance.fromPlayerDataJson(it)
+            }
+    }
+
     fun sendPlayerData() {
-        val data = PlayerDataJson("Henk")
+        val data = HumanPlayer().toPlayerDataJson()
 
         send(data)
     }

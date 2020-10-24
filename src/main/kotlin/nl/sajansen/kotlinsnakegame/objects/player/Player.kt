@@ -1,5 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.player
 
+import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
+
 interface Player {
     var name: String
     var score: Int
@@ -23,4 +25,7 @@ interface Player {
             leftKey = player.leftKey
         }
     }
+
+    fun toPlayerDataJson(): PlayerDataJson
+    fun fromPlayerDataJson(data: PlayerDataJson): Player
 }
