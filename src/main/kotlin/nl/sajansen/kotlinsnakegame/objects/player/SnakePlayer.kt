@@ -57,6 +57,7 @@ class SnakePlayer(
         }
 
     private var direction: Direction = Direction.NONE
+    private var nextDirection: Direction = Direction.NONE
     private var speed = Game.board.gridSize
     private var starWearsOutTime = 0L
 
@@ -85,6 +86,7 @@ class SnakePlayer(
 
     override fun reset() {
         direction = if (Config.snakeOnlyLeftRightControls) Direction.SOUTH else Direction.NONE
+        nextDirection = direction
         score = 3
         nextUpdateTime = 0
         starWearsOutTime = 0
@@ -114,15 +116,15 @@ class SnakePlayer(
     override fun keyPressed(e: KeyEvent) {
         if (Config.snakeOnlyLeftRightControls) {
             when (e.keyCode) {
-                rightKey -> direction = directionForRightTurn()
-                leftKey -> direction = directionForLeftTurn()
+                rightKey -> nextDirection = directionForRightTurn()
+                leftKey -> nextDirection = directionForLeftTurn()
             }
         } else {
             when (e.keyCode) {
-                upKey -> direction = Direction.NORTH
-                rightKey -> direction = Direction.EAST
-                downKey -> direction = Direction.SOUTH
-                leftKey -> direction = Direction.WEST
+                upKey -> nextDirection = Direction.NORTH
+                rightKey -> nextDirection = Direction.EAST
+                downKey -> nextDirection = Direction.SOUTH
+                leftKey -> nextDirection = Direction.WEST
             }
         }
 
@@ -177,6 +179,11 @@ class SnakePlayer(
     }
 
     private fun moveToNewPosition() {
+        if (newDirectionIsBackwards()) {
+            nextDirection = direction
+        }
+
+        direction = nextDirection
         when (direction) {
             Direction.NORTH -> headEntity.position.y -= speed
             Direction.EAST -> headEntity.position.x += speed
@@ -194,6 +201,10 @@ class SnakePlayer(
         }
 
         adjustPositionForWall(headEntity.position, headEntity.size, sizeMarginFactor = 0.0)
+    }
+
+    private fun newDirectionIsBackwards(): Boolean {
+        return (8 + direction.value - nextDirection.value) % 8 == 4
     }
 
     private fun cutOffBodyAt(body: SnakeBody) {
@@ -264,6 +275,12 @@ class SnakePlayer(
             if (hasStarEffect()) {
                 return
             }
+
+            if (direction == Direction.NONE) {
+                logger.fine("Game just started, cannot collide with itself")
+                return
+            }
+            
             if (bodyEntities.size == 1 && bodyEntities.last() == snakeBody) {
                 logger.info("It is impossible for $name to run into its body of length 1")
                 return

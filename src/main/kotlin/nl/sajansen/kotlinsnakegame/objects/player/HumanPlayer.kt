@@ -33,7 +33,7 @@ class HumanPlayer(
         }
 
     private var previousPosition = Point(0, 0)
-    private var pushFood = false
+    private var pushFood = true
     private var keysPressedUp = false
     private var keysPressedRight = false
     private var keysPressedDown = false
@@ -72,7 +72,7 @@ class HumanPlayer(
             rightKey -> addDirection(Direction.EAST)
             downKey -> addDirection(Direction.SOUTH)
             leftKey -> addDirection(Direction.WEST)
-            Config.playerPushFood -> pushFood = true
+            Config.playerPushFood -> pushFood = false
         }
 
         calculateDirection()
@@ -84,7 +84,7 @@ class HumanPlayer(
             rightKey -> removeDirection(Direction.EAST)
             downKey -> removeDirection(Direction.SOUTH)
             leftKey -> removeDirection(Direction.WEST)
-            Config.playerPushFood -> pushFood = false
+            Config.playerPushFood -> pushFood = true
         }
 
         calculateDirection()

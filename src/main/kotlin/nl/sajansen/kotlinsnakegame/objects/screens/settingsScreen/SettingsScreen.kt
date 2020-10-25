@@ -26,6 +26,11 @@ object SettingsScreen : Screen() {
         rebuildGui()
     }
 
+    override fun show(index: Int?) {
+        super.show(index)
+        rebuildGui()
+    }
+
     fun rebuildGui() {
         components.clear()
         initGui()

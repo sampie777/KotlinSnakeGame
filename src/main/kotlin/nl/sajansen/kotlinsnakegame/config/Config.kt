@@ -22,12 +22,12 @@ object Config {
     var maxPlayers = 6
 
     var snakeCollidesWithWalls = !playerWarpsThroughWalls
-    var snakeStepInterval = 13
-    var snakeOnlyLeftRightControls = true
+    var snakeStepInterval = 10
+    var snakeOnlyLeftRightControls = false
     var snakeEatsHumanPlayer = true
 
-    var starMinSpawnTime = 1   // In seconds
-    var starMaxSpawnTime = 10  // In seconds
+    var starMinSpawnTime = 0   // In seconds
+    var starMaxSpawnTime = 30  // In seconds
     var starEffectTime = 7   // In seconds
     var starMinDieTimeout = 5
     var starMaxDieTimeout = 15
