@@ -7,7 +7,7 @@ object MultiPlayer : ApplicationEventListener {
     var isServer = false
     var isRemote = false
 
-    private var remoteServer: RemoteServer? = null
+    private var client: RemoteServer? = null
 
     init {
         EventHub.register(this)
@@ -17,7 +17,7 @@ object MultiPlayer : ApplicationEventListener {
         if (isServer) {
             Server.sendGameData()
         } else if (isRemote) {
-            remoteServer?.sendPlayerData()
+            client?.sendPlayerData()
         }
     }
 
@@ -32,8 +32,8 @@ object MultiPlayer : ApplicationEventListener {
             Server.join()
         }
         if (isRemote){
-            remoteServer?.stop()
-            remoteServer?.join()
+            client?.stop()
+            client?.join()
         }
     }
 }

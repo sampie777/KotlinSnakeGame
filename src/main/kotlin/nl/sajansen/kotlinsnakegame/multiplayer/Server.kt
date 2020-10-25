@@ -50,11 +50,20 @@ object Server : MessagingServer() {
     }
 
     private fun processPlayerData(data: PlayerDataJson, client: RemoteClient) {
-        println("Player data name: " + data.name)
+        val existingPlayer = Game.players.find { it.name == data.name }
+        if (existingPlayer == null) {
+            val player = playerDataJsonToPlayer(data)
+            Game.players.add(player)
+        } else {
+            existingPlayer.fromPlayerDataJson(data)
+        }
+
     }
 
     fun sendGameData() {
-        logger.fine("Sending game data to players")
+        if (clients.isEmpty()) {
+            return
+        }
 
         val players = Game.players.map { it.toPlayerDataJson() }
         val data = GameDataJson(

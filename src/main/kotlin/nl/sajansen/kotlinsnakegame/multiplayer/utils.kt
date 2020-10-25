@@ -2,7 +2,10 @@ package nl.sajansen.kotlinsnakegame.multiplayer
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import nl.sajansen.kotlinsnakegame.multiplayer.json.GameDataJson
 import nl.sajansen.kotlinsnakegame.multiplayer.json.JsonMessage
+import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
+import nl.sajansen.kotlinsnakegame.objects.player.Player
 import java.util.logging.Logger
 
 val logger = Logger.getLogger("utils")
@@ -33,4 +36,17 @@ fun getObjectFromMessage(message: JsonMessage): Any? {
     val objectClass = Class.forName(message.dataClass)
     val objString = jsonBuilder().toJson(message.data)
     return Gson().fromJson(objString, objectClass)
+}
+
+fun getPlayersFromData(data: GameDataJson): List<Player> {
+    return data.players
+        .map {
+            playerDataJsonToPlayer(it)
+        }
+}
+
+fun playerDataJsonToPlayer(playerDataJson: PlayerDataJson): Player {
+    val objectClass = Class.forName(playerDataJson.className)
+    val instance = objectClass.newInstance() as Player
+    return instance.fromPlayerDataJson(playerDataJson)
 }
