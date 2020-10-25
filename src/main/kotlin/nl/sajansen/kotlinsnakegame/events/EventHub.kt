@@ -4,13 +4,14 @@ import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.util.logging.Logger
 
-object EventHub : GameEventListener, KeyEventListener, ConfigEventListener, MouseEventListener {
+object EventHub : GameEventListener, KeyEventListener, ConfigEventListener, MouseEventListener, ApplicationEventListener {
     private val logger = Logger.getLogger(EventHub::class.java.name)
 
     private val gameEventListeners = hashSetOf<GameEventListener>()
     private val keyEventListeners = hashSetOf<KeyEventListener>()
     private val configEventListeners = hashSetOf<ConfigEventListener>()
     private val mouseEventListeners = hashSetOf<MouseEventListener>()
+    private val applicationEventListeners = hashSetOf<ApplicationEventListener>()
 
     fun register(listener: EventListener) {
         logger.info("Adding EventListener: $listener (${listener.javaClass.name})")
@@ -33,6 +34,11 @@ object EventHub : GameEventListener, KeyEventListener, ConfigEventListener, Mous
         if (listener is MouseEventListener) {
             logger.info("Adding MouseEventListener")
             mouseEventListeners.add(listener)
+        }
+
+        if (listener is ApplicationEventListener) {
+            logger.info("Adding ApplicationEventListener")
+            applicationEventListeners.add(listener)
         }
     }
 
@@ -119,6 +125,16 @@ object EventHub : GameEventListener, KeyEventListener, ConfigEventListener, Mous
         logger.finer("Sending MouseEventListener.mouseExitedScreen event")
         mouseEventListeners.toTypedArray().forEach {
             it.mouseExitedScreen(e)
+        }
+    }
+
+    /**
+     * ApplicationEventListener events
+     */
+    override fun onShutDown() {
+        logger.finer("Sending ApplicationEventListener.onShutDown event")
+        applicationEventListeners.toTypedArray().forEach {
+            it.onShutDown()
         }
     }
 }

@@ -1,6 +1,7 @@
 package nl.sajansen.kotlinsnakegame
 
 import nl.sajansen.kotlinsnakegame.config.Config
+import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.gui.mainFrame.MainFrame
 import java.awt.Color
 import java.awt.event.KeyEvent
@@ -43,6 +44,8 @@ fun isAddressLocalhost(address: String): Boolean {
 
 fun exitApplication() {
     logger.info("Shutting down application")
+
+    EventHub.onShutDown()
 
     Config.save()
 

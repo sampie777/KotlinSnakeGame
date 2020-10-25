@@ -11,6 +11,7 @@ object Server : MessagingServer() {
     override val logger: Logger = Logger.getLogger(Server::class.java.name)
 
     private val clients: ArrayList<RemoteClient> = arrayListOf()
+    private var previousGameDataJson: GameDataJson? = null
 
     override fun start() {
         logger.info("Creating server socket on port: ${Config.serverPort}")
@@ -53,11 +54,19 @@ object Server : MessagingServer() {
     }
 
     fun sendGameData() {
+        logger.fine("Sending game data to players")
+
         val players = Game.players.map { it.toPlayerDataJson() }
         val data = GameDataJson(
             isEnded = false,
             players = players
         )
+
+        // Only update on changes
+        if (data == previousGameDataJson) {
+            return
+        }
+        previousGameDataJson = data
 
         clients.forEach { send(data, it) }
     }

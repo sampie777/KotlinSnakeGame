@@ -3,6 +3,7 @@ package nl.sajansen.kotlinsnakegame.objects.game
 import nl.sajansen.kotlinsnakegame.events.EventHub
 import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
+import nl.sajansen.kotlinsnakegame.multiplayer.MultiPlayer
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
 import nl.sajansen.kotlinsnakegame.objects.player.Player
@@ -127,6 +128,8 @@ object Game : KeyEventListener {
     fun step() {
         state.time++
         board.step()
+
+        MultiPlayer.step()
     }
 
     fun paint(): BufferedImage {

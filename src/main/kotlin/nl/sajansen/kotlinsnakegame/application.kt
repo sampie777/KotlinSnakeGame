@@ -2,6 +2,7 @@ package nl.sajansen.kotlinsnakegame
 
 import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.mainFrame.MainFrame
+import nl.sajansen.kotlinsnakegame.multiplayer.MultiPlayer
 import nl.sajansen.kotlinsnakegame.objects.screens.StartScreen
 import java.awt.EventQueue
 import java.util.logging.Logger
@@ -17,6 +18,8 @@ fun main(args: Array<String>) {
     }
     Config.load()
     Config.save()
+
+    MultiPlayer.startAsServer()
 
     EventQueue.invokeLater {
         MainFrame.create()
