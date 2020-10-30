@@ -54,6 +54,8 @@ object Config {
     var serverPort = 11100
     var maxDataPacketLength = 1024
 
+    var audioTracks = 8
+
     fun load() {
         try {
             PropertyLoader.load()

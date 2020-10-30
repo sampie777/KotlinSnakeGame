@@ -96,7 +96,7 @@ object PropertyLoader {
                     field.set(null, stringToTypedValue(propertyValue, field.name, field.type))
 
                 } catch (e: IllegalArgumentException) {
-                    logger.warning(e.toString())
+                    logger.fine(e.toString())
                 }
             }
         } catch (e: Exception) {

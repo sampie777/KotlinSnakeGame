@@ -24,6 +24,12 @@ open class Gnome : Sprite() {
     private val soundUpdateInterval = 4
     private var soundTrack = 0
 
+    override fun reset() {
+        super.reset()
+        soundTrack = 0
+        nextSoundTime = 0L
+    }
+
     override fun step() {
         if (direction == Direction.NONE) return
 

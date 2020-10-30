@@ -10,6 +10,9 @@ import kotlin.math.min
 object SoundPlayer {
     private val logger = Logger.getLogger(SoundPlayer::class.java.name)
 
+    private val clips: Array<Clip?> = arrayOfNulls(Config.audioTracks)
+    private var currentClipIndex = 0
+
     fun play(sound: Sounds, gain: Float = sound.defaultVolume) {
         val clip = getClip(sound) ?: return
         clip.gain = gain * Config.mainVolume
@@ -35,7 +38,7 @@ object SoundPlayer {
             val inputStream: AudioInputStream = AudioSystem.getAudioInputStream(file)
             val dataLineInfo = DataLine.Info(Clip::class.java, inputStream.format)
 
-            val clip = AudioSystem.getLine(dataLineInfo) as Clip
+            val clip = getNextAvailableClip(dataLineInfo)
             clip.open(inputStream)
             return clip
         } catch (e: Exception) {
@@ -43,6 +46,22 @@ object SoundPlayer {
             e.printStackTrace()
         }
         return null
+    }
+
+    /**
+     * Get next clip in clips array. If null, create a new one, otherwise close the precious one.
+     * By using an fixed amount of clips, it is hoped to reduce system load.
+     */
+    private fun getNextAvailableClip(dataLineInfo: DataLine.Info): Clip {
+        currentClipIndex++
+        if (currentClipIndex >= clips.size) {
+            currentClipIndex = 0
+        }
+
+        clips[currentClipIndex]?.close()
+        clips[currentClipIndex] = AudioSystem.getLine(dataLineInfo) as Clip
+
+        return clips[currentClipIndex]!!
     }
 
     private fun Clip.volumeControl() = this.getControl(FloatControl.Type.VOLUME) as FloatControl
