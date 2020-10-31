@@ -1,11 +1,11 @@
 package nl.sajansen.kotlinsnakegame.objects.entities
 
 
+import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.utils.scaleImage
 import nl.sajansen.kotlinsnakegame.objects.Sprites
 import nl.sajansen.kotlinsnakegame.objects.game.Game
-import java.awt.Dimension
-import java.awt.Point
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
@@ -14,6 +14,7 @@ abstract class Sprite : CollidableEntity {
 
     override var position = Point(0, 0)
     override var size = Dimension(32, 32)
+    override var hitboxes: ArrayList<Rectangle> = arrayListOf(Rectangle(0, 0, 32, 32))
     open var sprite = Sprites.UNKNOWN
     open var solid = true
 
@@ -33,7 +34,23 @@ abstract class Sprite : CollidableEntity {
         }
 
         val frameImage = getCurrentSpriteFrame(sprite.bufferedImage!!)
-        return scaleImage(frameImage, size.width, size.height)
+        val scaledImage = scaleImage(frameImage, size.width, size.height)
+
+        if (Config.displayHitBoxes) {
+            drawHitBoxes(scaledImage)
+        }
+
+        return scaledImage
+    }
+
+    private fun drawHitBoxes(image: BufferedImage) {
+        val g = image.createGraphics() as Graphics2D
+        g.color = Color(74, 255, 74)
+        g.stroke = BasicStroke(1F)
+
+        hitboxes.forEach {
+            g.drawRect(it.x, it.y, it.width - 1, it.height - 1)
+        }
     }
 
     private fun getCurrentSpriteFrame(image: BufferedImage): BufferedImage {

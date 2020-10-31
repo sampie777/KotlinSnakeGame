@@ -6,6 +6,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
+import java.awt.Rectangle
 import java.util.logging.Logger
 
 class Food(
@@ -14,6 +15,7 @@ class Food(
     private val logger = Logger.getLogger(Food::class.java.name)
 
     override var size = Dimension(16, 16)
+    override var hitboxes: ArrayList<Rectangle> = arrayListOf(Rectangle(0, 0, 16, 16))
     override var sprite = Sprites.FOOD_1
     override var solid = false
     var points = 1

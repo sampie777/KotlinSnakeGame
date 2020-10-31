@@ -5,11 +5,13 @@ import nl.sajansen.kotlinsnakegame.objects.Sprites
 import nl.sajansen.kotlinsnakegame.objects.colorizeImage
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
 class SnakeBody(override val snakePlayer: SnakePlayer) : SnakePart, Sprite() {
     private val logger = Logger.getLogger(SnakeBody::class.java.name)
+    override var hitboxes: ArrayList<Rectangle> = arrayListOf(Rectangle(0, 0, 32, 32))
 
     override var sprite = Sprites.SNAKE_BODY_1
 

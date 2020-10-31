@@ -161,10 +161,10 @@ class HumanPlayer(
 
     private fun pushEntity(entity: Entity) {
         when (direction) {
-            Direction.NORTH -> entity.position.y = position.y - entity.size.height
-            Direction.EAST -> entity.position.x = position.x + size.width
-            Direction.SOUTH -> entity.position.y = position.y + size.height
-            Direction.WEST -> entity.position.x = position.x - entity.size.width
+            Direction.NORTH -> entity.position.y = position.y + hitboxes[0].y - entity.size.height
+            Direction.EAST -> entity.position.x = position.x + hitboxes[0].x + hitboxes[0].width
+            Direction.SOUTH -> entity.position.y = position.y + hitboxes[0].y + hitboxes[0].height
+            Direction.WEST -> entity.position.x = position.x + hitboxes[0].x - entity.size.width
             else -> {
             }
         }

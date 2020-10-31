@@ -8,6 +8,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Dimension
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 
@@ -18,6 +19,7 @@ open class Gnome : Sprite() {
     override var size = Dimension(19, 32)
     override var spriteSpeed = 3
     override var solid = false
+    override var hitboxes: ArrayList<Rectangle> = arrayListOf(Rectangle(0, 16, 19, 16))
     var direction: Direction = Direction.NONE
 
     private var nextSoundTime = 0L

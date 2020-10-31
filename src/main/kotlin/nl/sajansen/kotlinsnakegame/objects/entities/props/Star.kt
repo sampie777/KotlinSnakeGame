@@ -7,6 +7,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.Dimension
 import java.awt.Point
+import java.awt.Rectangle
 import java.util.logging.Logger
 import kotlin.random.Random
 
@@ -37,6 +38,7 @@ class Star(
 
     override var sprite = Sprites.STAR_2
     override var size = Dimension(32, 30)
+    override var hitboxes: ArrayList<Rectangle> = arrayListOf(Rectangle(0, 0, 32, 30))
 
     private var dieAtTime = -1L
 

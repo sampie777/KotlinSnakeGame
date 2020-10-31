@@ -4,10 +4,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.player.SnakePlayer
-import java.awt.AlphaComposite
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Point
+import java.awt.*
 import java.awt.image.BufferedImage
 
 fun isPointInSprite(point: Point, sprite: Sprite): Boolean {
@@ -34,11 +31,25 @@ fun isSpriteInSprite(sprite1: Sprite, sprite2: Sprite): Boolean {
             && sprite1.position.y < sprite2.position.y + sprite2.size.height
 }
 
-fun isEntityInEntity(entity1: Entity, entity2: Entity): Boolean {
+fun isEntitySizeInEntitySize(entity1: Entity, entity2: Entity): Boolean {
     return entity1.position.x + entity1.size.width > entity2.position.x
             && entity1.position.x < entity2.position.x + entity2.size.width
             && entity1.position.y + entity1.size.height > entity2.position.y
             && entity1.position.y < entity2.position.y + entity2.size.height
+}
+
+fun isEntityInEntity(entity1: Entity, entity2: Entity): Boolean {
+    return entity1.hitboxes.any {
+        val hitbox1 = it.clone() as Rectangle
+        hitbox1.translate(
+            entity1.position.x - entity2.position.x,
+            entity1.position.y - entity2.position.y
+        )
+
+        entity2.hitboxes.any { hitbox2 ->
+            hitbox1.intersects(hitbox2)
+        }
+    }
 }
 
 fun colorizeImage(image: BufferedImage, color: Color): BufferedImage {
