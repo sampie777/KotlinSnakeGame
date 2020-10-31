@@ -7,6 +7,7 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
+import nl.sajansen.kotlinsnakegame.objects.drawShadowedString
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.other.Gnome
@@ -15,6 +16,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
+import java.awt.Graphics2D
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
@@ -195,5 +197,10 @@ class HumanPlayer(
         position = data.position
         direction = data.direction
         return this
+    }
+
+    override fun paintName(g: Graphics2D) {
+        val width = g.fontMetrics.stringWidth(name)
+        g.drawShadowedString(name, position.x + (size.width - width) / 2, position.y - 10, 1)
     }
 }

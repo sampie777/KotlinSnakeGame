@@ -8,6 +8,7 @@ import nl.sajansen.kotlinsnakegame.events.KeyEventListener
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
 import nl.sajansen.kotlinsnakegame.objects.Direction
 import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
+import nl.sajansen.kotlinsnakegame.objects.drawShadowedString
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
@@ -19,6 +20,7 @@ import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.util.logging.Logger
@@ -376,5 +378,11 @@ class SnakePlayer(
         direction = data.direction
         color = color
         return this
+    }
+
+    override fun paintName(g: Graphics2D) {
+        val width = g.fontMetrics.stringWidth(name)
+        g.color = color
+        g.drawShadowedString(name, headEntity.position.x + (headEntity.size.width - width) / 2, headEntity.position.y - 10, 1)
     }
 }

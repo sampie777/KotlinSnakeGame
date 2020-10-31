@@ -14,9 +14,7 @@ import nl.sajansen.kotlinsnakegame.objects.isEntityInEntity
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
 import nl.sajansen.kotlinsnakegame.objects.player.Player
-import java.awt.Dimension
-import java.awt.Graphics2D
-import java.awt.Point
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
 import kotlin.random.Random
@@ -91,8 +89,20 @@ class DefaultBoard : Board {
 
         paintSprites(g, spriteEntities())
 
+        if (Config.displayPlayerNames) {
+            paintPlayerNames(g)
+        }
+
         g.dispose()
         return bufferedImage.getSubimage(windowPosition.x, windowPosition.y, windowSize.width, windowSize.height)
+    }
+
+    private fun paintPlayerNames(g: Graphics2D) {
+        Game.players.forEach {
+            g.font = Font("Dialog", Font.PLAIN, 11)
+            g.color = Color(189, 189, 189)
+            it.paintName(g)
+        }
     }
 
     private fun paintSprites(g: Graphics2D, sprites: List<Sprite>) {

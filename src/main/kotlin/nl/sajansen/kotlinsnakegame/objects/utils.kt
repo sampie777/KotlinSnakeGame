@@ -93,3 +93,17 @@ fun getAvailableColorForSnake(player: SnakePlayer) {
         }
     player.color = availableColors.firstOrNull() ?: SnakePlayer.availableColors.first()
 }
+
+fun Graphics2D.drawShadowedString(
+    text: String,
+    x: Int,
+    y: Int,
+    thickness: Int,
+    shadowColor: Color = Color(0, 0, 0, 100)
+) {
+    val color = this.color
+    this.color = shadowColor
+    this.drawString(text, x + thickness, y + thickness)
+    this.color = color
+    this.drawString(text, x, y)
+}

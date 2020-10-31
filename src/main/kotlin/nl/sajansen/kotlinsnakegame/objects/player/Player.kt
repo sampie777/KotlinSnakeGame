@@ -1,6 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.player
 
 import nl.sajansen.kotlinsnakegame.multiplayer.json.PlayerDataJson
+import java.awt.Graphics2D
 
 interface Player {
     var name: String
@@ -28,4 +29,6 @@ interface Player {
 
     fun toPlayerDataJson(): PlayerDataJson
     fun fromPlayerDataJson(data: PlayerDataJson): Player
+
+    fun paintName(g: Graphics2D)
 }
