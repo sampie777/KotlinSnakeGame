@@ -59,8 +59,18 @@ object StartScreen : Screen(), KeyEventListener {
         snakeVsGnomeButton.onClick = { startSnakeVsGnome() }
         add(snakeVsGnomeButton)
 
+        val freePlayButton = Button("Free Play")
+        freePlayButton.position = Point(0, 410)
+        freePlayButton.size = Dimension(370, 0)
+        freePlayButton.cornerRounding = Dimension(30, 30)
+        freePlayButton.backgroundColor = Color(100, 100, 100)
+        freePlayButton.font = Font("Dialog", Font.PLAIN, 28)
+        freePlayButton.componentAlignmentX = ComponentAlignment.CENTER
+        freePlayButton.onClick = { startFreePlay() }
+        add(freePlayButton)
+
         val quitButton = Button("Quit")
-        quitButton.position = Point(0, 430)
+        quitButton.position = Point(0, 500)
         quitButton.backgroundColor = null
         quitButton.font = Font("Dialog", Font.PLAIN, 16)
         quitButton.componentAlignmentX = ComponentAlignment.CENTER
@@ -165,6 +175,10 @@ object StartScreen : Screen(), KeyEventListener {
                 getAvailableColorForSnake(snakePlayer)
             }
 
+        Game.restart()
+    }
+
+    private fun startFreePlay() {
         Game.restart()
     }
 }
