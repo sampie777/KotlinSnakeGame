@@ -11,12 +11,14 @@ import nl.sajansen.kotlinsnakegame.objects.adjustPositionForWall
 import nl.sajansen.kotlinsnakegame.objects.drawShadowedString
 import nl.sajansen.kotlinsnakegame.objects.entities.Entity
 import nl.sajansen.kotlinsnakegame.objects.entities.Sprite
+import nl.sajansen.kotlinsnakegame.objects.entities.props.Box
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Food
 import nl.sajansen.kotlinsnakegame.objects.entities.props.Star
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
+import nl.sajansen.kotlinsnakegame.objects.lidar.LidarDetection
 import nl.sajansen.kotlinsnakegame.objects.lidar.LidarScanResult
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
@@ -27,6 +29,7 @@ import java.awt.event.KeyEvent
 import java.util.logging.Logger
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
 class SnakePlayer(
@@ -393,12 +396,71 @@ class SnakePlayer(
     }
 
     fun see(scanResult: LidarScanResult) {
-        val isBoxInFront = scanResult.detections.all {
-            it.intensity > 0 && it.distance < 11
+        val detections = getForwardDetections(scanResult.detections)
+        val scannedObject = identifyScannedObject(detections)
+
+        when (scannedObject) {
+            Box::class.java -> {
+                logger.info("LIDAR detected Box")
+                nextDirection = directionForRightTurn()
+            }
+            Food::class.java -> {
+                logger.info("LIDAR detected Food")
+            }
+            else -> return
+        }
+    }
+
+    private fun getForwardDetections(detections: List<LidarDetection>): List<LidarDetection> {
+        val viewAngle = 70.0
+        val minAngle = (headEntity.viewAngle - viewAngle) / 2
+        val maxAngle = headEntity.viewAngle - minAngle
+        return filterAngles(detections, minAngle, maxAngle)
+    }
+
+    private fun getLeftDetections(detections: List<LidarDetection>): List<LidarDetection> {
+        return filterAngles(detections, minAngle = 0.0, maxAngle = 45.0)
+    }
+
+    private fun getRightDetections(detections: List<LidarDetection>): List<LidarDetection> {
+        return filterAngles(detections, minAngle = 90.0 + 45.0, maxAngle = headEntity.viewAngle)
+    }
+
+    private fun filterAngles(
+        detections: List<LidarDetection>,
+        minAngle: Double = 0.0,
+        maxAngle: Double = headEntity.viewAngle
+    ): List<LidarDetection> {
+        val minAngleAbsolute = max(detections.first().angle, detections.first().angle + minAngle)
+        val maxAngleAbsolute = min(detections.last().angle, detections.first().angle + maxAngle)
+
+        return detections.filter { it.angle in minAngleAbsolute..maxAngleAbsolute }
+    }
+
+    private fun identifyScannedObject(detections: List<LidarDetection>): Class<*>? {
+        // Check for any reflection at all
+        if (detections.none { it.intensity > 0 && it.distance < headEntity.maxViewDistance }) {
+            return null
         }
 
-        if (isBoxInFront) {
-            nextDirection = directionForRightTurn()
+        return when (true) {
+            identifyScannedObjectAsBox(detections) -> Box::class.java
+            identifyScannedObjectAsFood(detections) -> Food::class.java
+            else -> null
         }
+    }
+
+    private fun identifyScannedObjectAsBox(detections: List<LidarDetection>): Boolean {
+        val farbyDetections = detections.filter { it.intensity > 0 && it.distance < 28 }
+        val mediumbyDetections = farbyDetections.filter { it.intensity > 0 && it.distance < 23 }
+        val nearbyDetections = mediumbyDetections.filter { it.intensity > 0 && it.distance < 19 }
+
+        return nearbyDetections.size >= 4 && mediumbyDetections.size >= 7 && farbyDetections.size >= 9
+    }
+
+    private fun identifyScannedObjectAsFood(detections: List<LidarDetection>): Boolean {
+        val nearbyDetections = detections.filter { it.intensity > 0 && it.distance < 29 && it.distance > 20 }
+
+        return nearbyDetections.size == 5
     }
 }

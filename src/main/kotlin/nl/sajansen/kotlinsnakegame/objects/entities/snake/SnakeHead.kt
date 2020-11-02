@@ -19,10 +19,10 @@ class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite(), Li
     private val logger = Logger.getLogger(SnakeHead::class.java.name)
 
     // Lidar
-    private val radarTranslationToInner = 6
+    private val radarTranslationToInner = 16
     override val maxViewDistance = radarTranslationToInner + 32
     override val minViewDistance = radarTranslationToInner + 2
-    override val viewAngle = 70.0
+    override val viewAngle = 180.0
 
     override var sprite = Sprites.SNAKE_HEAD_1
 
