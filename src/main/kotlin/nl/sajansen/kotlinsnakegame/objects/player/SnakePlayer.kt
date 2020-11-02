@@ -17,6 +17,7 @@ import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeBody
 import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
+import nl.sajansen.kotlinsnakegame.objects.lidar.LidarScanResult
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Color
@@ -384,5 +385,13 @@ class SnakePlayer(
         val width = g.fontMetrics.stringWidth(name)
         g.color = color
         g.drawShadowedString(name, headEntity.position.x + (headEntity.size.width - width) / 2, headEntity.position.y - 10, 1)
+    }
+
+    fun see(scanResult: LidarScanResult) {
+
+    }
+
+    fun radarOrientation(): Double {
+        return direction.value / 8.0 * 360
     }
 }

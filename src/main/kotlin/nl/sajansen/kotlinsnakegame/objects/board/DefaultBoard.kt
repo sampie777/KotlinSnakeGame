@@ -13,6 +13,8 @@ import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.isEntityInEntity
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
+import nl.sajansen.kotlinsnakegame.objects.lidar.Lidar
+import nl.sajansen.kotlinsnakegame.objects.lidar.LidarEquipped
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -87,7 +89,11 @@ class DefaultBoard : Board {
     override fun paint(): BufferedImage {
         val (bufferedImage, g: Graphics2D) = createGraphics(size.width, size.height)
 
-        paintSprites(g, spriteEntities())
+        val spriteEntitiesImage = paintSprites(spriteEntities())
+        g.drawImage(spriteEntitiesImage, null, 0, 0)
+
+        Lidar.scan(entities.filterIsInstance<LidarEquipped>(), image = spriteEntitiesImage)
+        g.drawImage(Lidar.beamsLayer, null, 0, 0)
 
         if (Config.displayPlayerNames) {
             paintPlayerNames(g)
@@ -105,10 +111,15 @@ class DefaultBoard : Board {
         }
     }
 
-    private fun paintSprites(g: Graphics2D, sprites: List<Sprite>) {
+    private fun paintSprites(sprites: List<Sprite>): BufferedImage {
+        val (bufferedImage, g: Graphics2D) = createGraphics(size.width, size.height)
+
         sprites.forEach {
             g.drawImage(it.paint(), null, it.position.x, it.position.y)
         }
+
+        g.dispose()
+        return bufferedImage
     }
 
     fun getEntitiesAt(entity: Entity): List<Entity> {
