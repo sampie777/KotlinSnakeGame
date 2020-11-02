@@ -1,5 +1,6 @@
 package nl.sajansen.kotlinsnakegame.objects.lidar
 
+import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -15,7 +16,7 @@ object Lidar {
     var objectsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
     var beamsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 
-    private const val beamsPerRadar = 9
+    private const val beamsPerDegree = 0.15
 
     fun scan(entities: List<LidarEquipped>) {
         scan(entities, objectsLayer)
@@ -28,7 +29,10 @@ object Lidar {
         entities.forEach {
             val scanResult = scanInImage(it, objectsLayer)
             it.see(scanResult)
-            paintScanResult(scanResult)
+
+            if (Config.displayLidarBeams) {
+                paintScanResult(scanResult)
+            }
         }
     }
 
@@ -39,7 +43,7 @@ object Lidar {
     private fun scanInImage(entity: LidarEquipped, image: BufferedImage): LidarScanResult {
         val scanResult = LidarScanResult(entity.radarPosition())
 
-        generateScanAngles(scanResult, entity, beamsPerRadar)
+        generateScanAngles(scanResult, entity)
 
         createBeamPaths(scanResult, entity)
 
@@ -48,12 +52,15 @@ object Lidar {
         return scanResult
     }
 
+    /**
+     * Determine the angles of the lidar beams
+     */
     private fun generateScanAngles(
         scanResult: LidarScanResult,
-        entity: LidarEquipped,
-        beamsAmount: Int
+        entity: LidarEquipped
     ) {
         val startDegree = entity.radarOrientation() - entity.viewAngle / 2
+        val beamsAmount = (entity.viewAngle * beamsPerDegree).toInt()
 
         (0 until beamsAmount)
             .map {
@@ -65,6 +72,9 @@ object Lidar {
             }
     }
 
+    /**
+     * Create a path of (unique) points along each lidar beam
+     */
     private fun createBeamPaths(
         scanResult: LidarScanResult,
         entity: LidarEquipped
@@ -95,6 +105,9 @@ object Lidar {
             }
     }
 
+    /**
+     * Check for non-transparent pixels for each point in the lidar beams/paths
+     */
     private fun detectObjects(scanResult: LidarScanResult, entity: LidarEquipped, image: BufferedImage) {
         val imageRectangle = Rectangle(image.width, image.height)
 
@@ -125,7 +138,7 @@ object Lidar {
     private fun paintScanResult(scanResult: LidarScanResult) {
         val g = beamsLayer.createGraphics() as Graphics2D
 
-        g.color = Color.GRAY
+        g.color = Color(110, 110, 110, 200)
         g.stroke = BasicStroke(1F)
 
         scanResult.beamPaths.forEach {
@@ -136,7 +149,7 @@ object Lidar {
             g.drawLine(it.first().x, it.first().y, it.last().x, it.last().y)
         }
 
-        g.color = Color.RED
+        g.color = Color(255, 0, 0, 200)
         scanResult.objectDetectionDistances.forEachIndexed { index, distance ->
             if (distance < 0) {
                 return@forEachIndexed

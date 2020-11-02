@@ -7,7 +7,7 @@ interface LidarEquipped {
     val minViewDistance: Int
     val viewAngle: Double
 
-    fun see(beams: LidarScanResult)
+    fun see(scanResult: LidarScanResult)
     fun radarPosition(): Point
     fun radarOrientation(): Double
 }

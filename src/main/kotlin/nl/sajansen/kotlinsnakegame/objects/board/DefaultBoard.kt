@@ -93,7 +93,9 @@ class DefaultBoard : Board {
         g.drawImage(spriteEntitiesImage, null, 0, 0)
 
         Lidar.scan(entities.filterIsInstance<LidarEquipped>(), image = spriteEntitiesImage)
-        g.drawImage(Lidar.beamsLayer, null, 0, 0)
+        if (Config.displayLidarBeams) {
+            g.drawImage(Lidar.beamsLayer, null, 0, 0)
+        }
 
         if (Config.displayPlayerNames) {
             paintPlayerNames(g)

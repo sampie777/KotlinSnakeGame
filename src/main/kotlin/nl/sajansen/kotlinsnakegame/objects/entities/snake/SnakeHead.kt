@@ -18,9 +18,11 @@ import kotlin.math.sin
 class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite(), LidarEquipped {
     private val logger = Logger.getLogger(SnakeHead::class.java.name)
 
-    override val maxViewDistance = 32
-    override val minViewDistance = 4
-    override val viewAngle = 90.0
+    // Lidar
+    private val radarTranslationToInner = 6
+    override val maxViewDistance = radarTranslationToInner + 32
+    override val minViewDistance = radarTranslationToInner + 2
+    override val viewAngle = 70.0
 
     override var sprite = Sprites.SNAKE_HEAD_1
 
@@ -48,12 +50,12 @@ class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite(), Li
         val orientation = Math.toRadians(radarOrientation())
 
         return Point(
-            (center.x + size.width / 2 * sin(orientation)).roundToInt(),
-            (center.y + size.height / 2 * -cos(orientation)).roundToInt(),
+            (center.x + (size.width / 2 - radarTranslationToInner) * sin(orientation)).roundToInt(),
+            (center.y + (size.height / 2 - radarTranslationToInner) * -cos(orientation)).roundToInt(),
         )
     }
 
     override fun radarOrientation(): Double {
-        return snakePlayer.radarOrientation()
+        return snakePlayer.direction.value / 8.0 * 360
     }
 }
