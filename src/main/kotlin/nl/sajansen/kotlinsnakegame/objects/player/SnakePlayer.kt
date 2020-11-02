@@ -393,8 +393,8 @@ class SnakePlayer(
     }
 
     fun see(scanResult: LidarScanResult) {
-        val isBoxInFront = scanResult.objectDetectionDistances.all { distance ->
-            distance >= 0 && distance < 11
+        val isBoxInFront = scanResult.detections.all {
+            it.intensity > 0 && it.distance < 11
         }
 
         if (isBoxInFront) {

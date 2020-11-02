@@ -16,7 +16,8 @@ object Lidar {
     var objectsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
     var beamsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 
-    private const val beamsPerDegree = 0.15
+    const val radarResolution = 54  // Beams per 360 degrees
+    private const val beamsPerDegree = radarResolution / 360.0
 
     fun scan(entities: List<LidarEquipped>) {
         scan(entities, objectsLayer)
@@ -68,7 +69,7 @@ object Lidar {
                 startDegree + degreeIncrement
             }
             .forEach { degree ->
-                scanResult.angles.add(degree)
+                scanResult.detections.add(LidarDetection(degree))
             }
     }
 
@@ -79,9 +80,9 @@ object Lidar {
         scanResult: LidarScanResult,
         entity: LidarEquipped
     ) {
-        scanResult.angles
-            .map(Math::toRadians)
-            .map { radian ->
+        scanResult.detections
+            .forEach {
+                val radian = Math.toRadians(it.angle)
                 val dX = sin(radian)
                 val dY = -cos(radian)
 
@@ -98,10 +99,7 @@ object Lidar {
                     y += dY
                 }
 
-                beamPath.distinct()
-            }
-            .forEach { path ->
-                scanResult.beamPaths.add(path)
+                it.path = beamPath.distinct()
             }
     }
 
@@ -111,9 +109,9 @@ object Lidar {
     private fun detectObjects(scanResult: LidarScanResult, entity: LidarEquipped, image: BufferedImage) {
         val imageRectangle = Rectangle(image.width, image.height)
 
-        scanResult.beamPaths
-            .map { path ->
-                val furthestPoint = path.find { point ->
+        scanResult.detections
+            .forEach {
+                val furthestPoint = it.path.find { point ->
                     if (!imageRectangle.contains(point)) {
                         return@find false
                     }
@@ -125,42 +123,39 @@ object Lidar {
                 }
 
                 if (furthestPoint == null) {
-                    return@map -1.0
+                    it.distance = entity.maxViewDistance.toDouble()
+                    return@forEach
                 }
 
-                entity.radarPosition().distance(furthestPoint)
-            }
-            .forEach {
-                scanResult.objectDetectionDistances.add(it)
+                val pixel = image.getRGB(furthestPoint.x, furthestPoint.y)
+                val color = Color(pixel, true)  // Create color of pixel value with alpha enabled
+                it.intensity = color.alpha / 255.0
+                it.distance = entity.radarPosition().distance(furthestPoint)
             }
     }
 
     private fun paintScanResult(scanResult: LidarScanResult) {
         val g = beamsLayer.createGraphics() as Graphics2D
 
-        g.color = Color(110, 110, 110, 200)
         g.stroke = BasicStroke(1F)
 
-        scanResult.beamPaths.forEach {
-            if (it.size < 2) {
-                return@forEach
+        scanResult.detections.forEach {
+            val nearestPoint = it.path.first()
+            var furthestPoint = it.path.last()
+
+            if (it.intensity == 0.0) {
+                g.color = Color(110, 110, 110, 200)
+            } else {
+                g.color = Color(255, 0, 0, 200)
+
+                val radianAngle = Math.toRadians(it.angle)
+                furthestPoint = Point(
+                    (scanResult.radarPosition.x + it.distance * sin(radianAngle)).roundToInt(),
+                    (scanResult.radarPosition.y + it.distance * -cos(radianAngle)).roundToInt(),
+                )
             }
 
-            g.drawLine(it.first().x, it.first().y, it.last().x, it.last().y)
-        }
-
-        g.color = Color(255, 0, 0, 200)
-        scanResult.objectDetectionDistances.forEachIndexed { index, distance ->
-            if (distance < 0) {
-                return@forEachIndexed
-            }
-
-            val radianAngle = Math.toRadians(scanResult.angles[index])
-            val endPoint = Point(
-                (scanResult.radarPosition.x + distance * sin(radianAngle)).roundToInt(),
-                (scanResult.radarPosition.y + distance * -cos(radianAngle)).roundToInt(),
-            )
-            g.drawLine(scanResult.radarPosition.x, scanResult.radarPosition.y, endPoint.x, endPoint.y)
+            g.drawLine(nearestPoint.x, nearestPoint.y, furthestPoint.x, furthestPoint.y)
         }
 
         g.dispose()
