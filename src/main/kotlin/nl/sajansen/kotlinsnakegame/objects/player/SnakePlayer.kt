@@ -59,7 +59,7 @@ class SnakePlayer(
             return field
         }
 
-    private var direction: Direction = Direction.NONE
+    var direction: Direction = Direction.NONE
     private var nextDirection: Direction = Direction.NONE
     private var speed = Game.board.gridSize
     private var starWearsOutTime = 0L
@@ -283,7 +283,7 @@ class SnakePlayer(
                 logger.fine("Game just started, cannot collide with itself")
                 return
             }
-            
+
             if (bodyEntities.size == 1 && bodyEntities.last() == snakeBody) {
                 logger.info("It is impossible for $name to run into its body of length 1")
                 return
@@ -384,14 +384,21 @@ class SnakePlayer(
     override fun paintName(g: Graphics2D) {
         val width = g.fontMetrics.stringWidth(name)
         g.color = color
-        g.drawShadowedString(name, headEntity.position.x + (headEntity.size.width - width) / 2, headEntity.position.y - 10, 1)
+        g.drawShadowedString(
+            name,
+            headEntity.position.x + (headEntity.size.width - width) / 2,
+            headEntity.position.y - 10,
+            1
+        )
     }
 
     fun see(scanResult: LidarScanResult) {
+        val isBoxInFront = scanResult.objectDetectionDistances.all { distance ->
+            distance >= 0 && distance < 11
+        }
 
-    }
-
-    fun radarOrientation(): Double {
-        return direction.value / 8.0 * 360
+        if (isBoxInFront) {
+            nextDirection = directionForRightTurn()
+        }
     }
 }
