@@ -12,6 +12,8 @@ interface Board {
     var windowPosition: Point
     var entities: ArrayList<Entity>
 
+    var entitiesImage: BufferedImage
+
     fun reset()
     fun step()
     fun paint(): BufferedImage

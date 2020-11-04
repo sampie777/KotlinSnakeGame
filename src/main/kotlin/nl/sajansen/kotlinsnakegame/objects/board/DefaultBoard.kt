@@ -14,7 +14,6 @@ import nl.sajansen.kotlinsnakegame.objects.isEntityInEntity
 import nl.sajansen.kotlinsnakegame.objects.isPointInSprite
 import nl.sajansen.kotlinsnakegame.objects.isSpriteInSprite
 import nl.sajansen.kotlinsnakegame.objects.lidar.Lidar
-import nl.sajansen.kotlinsnakegame.objects.lidar.LidarEquipped
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -29,6 +28,9 @@ class DefaultBoard : Board {
     override var windowSize = Dimension(28 * gridSize, 18 * gridSize)
     override var windowPosition = Point(0, 0)
     override var entities = arrayListOf<Entity>()
+
+    @Volatile
+    override var entitiesImage: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 
     private var spawnStarAtTime = -1L
 
@@ -89,12 +91,11 @@ class DefaultBoard : Board {
     override fun paint(): BufferedImage {
         val (bufferedImage, g: Graphics2D) = createGraphics(size.width, size.height)
 
-        val spriteEntitiesImage = paintSprites(spriteEntities())
-        g.drawImage(spriteEntitiesImage, null, 0, 0)
+        entitiesImage = paintSprites(spriteEntities())
+        g.drawImage(entitiesImage, null, 0, 0)
 
-        Lidar.scan(entities.filterIsInstance<LidarEquipped>(), image = spriteEntitiesImage)
         if (Config.displayLidarBeams) {
-            g.drawImage(Lidar.beamsLayer, null, 0, 0)
+            g.drawImage(Lidar.paint(), null, 0, 0)
         }
 
         if (Config.displayPlayerNames) {

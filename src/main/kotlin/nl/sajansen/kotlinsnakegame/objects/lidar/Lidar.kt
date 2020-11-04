@@ -1,7 +1,7 @@
 package nl.sajansen.kotlinsnakegame.objects.lidar
 
-import nl.sajansen.kotlinsnakegame.config.Config
 import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
+import nl.sajansen.kotlinsnakegame.objects.game.Game
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.logging.Logger
@@ -13,32 +13,22 @@ import kotlin.math.sin
 object Lidar {
     private val logger = Logger.getLogger(Lidar::class.java.name)
 
-    var objectsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-    var beamsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+    private var objectsLayer: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 
     const val radarResolution = 54  // Beams per 360 degrees
     private const val beamsPerDegree = radarResolution / 360.0
 
-    fun scan(entities: List<LidarEquipped>) {
-        scan(entities, objectsLayer)
+    fun scan() {
+        scan(Game.board.entities.filterIsInstance<LidarEquipped>(), Game.board.entitiesImage)
     }
 
     fun scan(entities: List<LidarEquipped>, image: BufferedImage) {
         objectsLayer = image
-        resetBeamsLayer()
 
         entities.forEach {
             val scanResult = scanInImage(it, objectsLayer)
-            it.see(scanResult)
-
-            if (Config.displayLidarBeams) {
-                paintScanResult(scanResult)
-            }
+            it.scanResult = scanResult
         }
-    }
-
-    private fun resetBeamsLayer() {
-        beamsLayer = createGraphics(objectsLayer.width, objectsLayer.height).first
     }
 
     private fun scanInImage(entity: LidarEquipped, image: BufferedImage): LidarScanResult {
@@ -134,30 +124,34 @@ object Lidar {
             }
     }
 
-    private fun paintScanResult(scanResult: LidarScanResult) {
-        val g = beamsLayer.createGraphics() as Graphics2D
+    fun paint(): BufferedImage = paint(Game.board.entities.filterIsInstance<LidarEquipped>())
 
+    fun paint(entities: List<LidarEquipped>): BufferedImage {
+        val (bufferedImage, g: Graphics2D) = createGraphics(objectsLayer.width, objectsLayer.height)
         g.stroke = BasicStroke(1F)
 
-        scanResult.detections.forEach {
-            val nearestPoint = it.path.first()
-            var furthestPoint = it.path.last()
+        entities.forEach { entity ->
+            entity.scanResult.detections.forEach {
+                val nearestPoint = it.path.first()
+                var furthestPoint = it.path.last()
 
-            if (it.intensity == 0.0) {
-                g.color = Color(110, 110, 110, 200)
-            } else {
-                g.color = Color(255, 0, 0, 200)
+                if (it.intensity == 0.0) {
+                    g.color = Color(110, 110, 110, 200)
+                } else {
+                    g.color = Color(255, 0, 0, 200)
 
-                val radianAngle = Math.toRadians(it.angle)
-                furthestPoint = Point(
-                    (scanResult.radarPosition.x + it.distance * sin(radianAngle)).roundToInt(),
-                    (scanResult.radarPosition.y + it.distance * -cos(radianAngle)).roundToInt(),
-                )
+                    val radianAngle = Math.toRadians(it.angle)
+                    furthestPoint = Point(
+                        (entity.scanResult.radarPosition.x + it.distance * sin(radianAngle)).roundToInt(),
+                        (entity.scanResult.radarPosition.y + it.distance * -cos(radianAngle)).roundToInt(),
+                    )
+                }
+
+                g.drawLine(nearestPoint.x, nearestPoint.y, furthestPoint.x, furthestPoint.y)
             }
-
-            g.drawLine(nearestPoint.x, nearestPoint.y, furthestPoint.x, furthestPoint.y)
         }
 
         g.dispose()
+        return bufferedImage
     }
 }

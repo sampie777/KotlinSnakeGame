@@ -6,6 +6,7 @@ import nl.sajansen.kotlinsnakegame.gui.utils.createGraphics
 import nl.sajansen.kotlinsnakegame.multiplayer.MultiPlayer
 import nl.sajansen.kotlinsnakegame.objects.board.Board
 import nl.sajansen.kotlinsnakegame.objects.board.DefaultBoard
+import nl.sajansen.kotlinsnakegame.objects.lidar.Lidar
 import nl.sajansen.kotlinsnakegame.objects.player.Player
 import nl.sajansen.kotlinsnakegame.objects.screens.GameOverScreen
 import nl.sajansen.kotlinsnakegame.objects.screens.GameOverlay
@@ -127,6 +128,9 @@ object Game : KeyEventListener {
 
     fun step() {
         state.time++
+
+        Lidar.scan()
+
         board.step()
 
         MultiPlayer.step()

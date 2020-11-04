@@ -23,6 +23,7 @@ class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite(), Li
     override val maxViewDistance = radarTranslationToInner + 32
     override val minViewDistance = radarTranslationToInner + 2
     override val viewAngle = 180.0
+    override var scanResult: LidarScanResult = LidarScanResult()
 
     override var sprite = Sprites.SNAKE_HEAD_1
 
@@ -37,9 +38,9 @@ class SnakeHead(override val snakePlayer: SnakePlayer) : SnakePart, Sprite(), Li
         snakePlayer.headCollidedWith(entity)
     }
 
-    override fun see(scanResult: LidarScanResult) {
-        snakePlayer.see(scanResult)
-    }
+    /*****************
+    LIDAR
+     */
 
     override fun radarPosition(): Point {
         val center = Point(

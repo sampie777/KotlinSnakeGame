@@ -19,7 +19,6 @@ import nl.sajansen.kotlinsnakegame.objects.entities.snake.SnakeHead
 import nl.sajansen.kotlinsnakegame.objects.game.Game
 import nl.sajansen.kotlinsnakegame.objects.game.GameRunningState
 import nl.sajansen.kotlinsnakegame.objects.lidar.LidarDetection
-import nl.sajansen.kotlinsnakegame.objects.lidar.LidarScanResult
 import nl.sajansen.kotlinsnakegame.objects.sound.SoundPlayer
 import nl.sajansen.kotlinsnakegame.objects.sound.Sounds
 import java.awt.Color
@@ -171,6 +170,8 @@ class SnakePlayer(
         if (!isItTimeToUpdateMovement()) {
             return
         }
+
+        lidarScan()
 
         updateBodyPositions()
         moveToNewPosition()
@@ -395,8 +396,12 @@ class SnakePlayer(
         )
     }
 
-    fun see(scanResult: LidarScanResult) {
-        val detections = getForwardDetections(scanResult.detections)
+    /*****************
+        LIDAR
+     */
+
+    fun lidarScan() {
+        val detections = getForwardDetections(headEntity.scanResult.detections)
         val scannedObject = identifyScannedObject(detections)
 
         when (scannedObject) {

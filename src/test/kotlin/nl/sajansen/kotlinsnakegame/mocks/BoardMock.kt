@@ -15,6 +15,7 @@ class BoardMock : Board {
     override var windowSize: Dimension = Dimension(100, 100)
     override var windowPosition: Point = Point(0, 0)
     override var entities: ArrayList<Entity> = arrayListOf()
+    override var entitiesImage: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 
     override fun reset() {
     }
