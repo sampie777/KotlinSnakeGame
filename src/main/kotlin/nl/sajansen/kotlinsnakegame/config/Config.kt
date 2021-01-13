@@ -59,7 +59,7 @@ object Config {
     var audioTracks = 8
 
     // Lidar
-    var displayLidarBeams = false
+    var displayLidarBeams = true
 
     fun load() {
         try {
